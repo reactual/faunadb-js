@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/client.js | FaunaDB API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  <a href="test.html" data-ice="testLink">Test</a>
+  <a data-ice="repoURL" href="https://github.com/faunadb/faunadb-js" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/AsyncStream.js~AsyncStream.html">AsyncStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PageStream.js~PageStream.html">PageStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/client.js~Client.html">Client</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~BadRequest.html">BadRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaError.html">FaunaError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaHTTPError.html">FaunaHTTPError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~InternalError.html">InternalError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~InvalidQuery.html">InvalidQuery</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~InvalidValue.html">InvalidValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~MethodNotAllowed.html">MethodNotAllowed</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~NotFound.html">NotFound</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~PermissionDenied.html">PermissionDenied</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~Unauthorized.html">Unauthorized</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~UnavailableError.html">UnavailableError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~Event.html">Event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~FaunaSet.html">FaunaSet</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~Page.html">Page</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~Ref.html">Ref</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-add">add</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-concat">concat</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-contains">contains</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-count">count</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-delete_expr">delete_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-difference">difference</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-divide">divide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-do_expr">do_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-equals">equals</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-foreach">foreach</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-get">get</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-if_expr">if_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-intersection">intersection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-join">join</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-lambda">lambda</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-lambda_expr">lambda_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-let_expr">let_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-map">map</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-match">match</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-multiply">multiply</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-object">object</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-paginate">paginate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-quote">quote</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-replace">replace</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-select">select</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-selectWithDefault">selectWithDefault</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-subtract">subtract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-union">union</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-variable">variable</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">model</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Builtin.html">Builtin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Class.html">Class</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~ClassIndex.html">ClassIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Database.html">Database</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Index.html">Index</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Key.html">Key</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Codec.js~Codec.html">Codec</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Field.js~Field.html">Field</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RefCodec">RefCodec</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/client.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import request from &apos;request&apos;
+import winston from &apos;winston&apos;
+import {BadRequest, FaunaHTTPError, InternalError, MethodNotAllowed, NotFound,
+  PermissionDenied, Unauthorized, UnavailableError} from &apos;./errors&apos;
+import {Ref} from &apos;./objects&apos;
+import {toJSON, parseJSON} from &apos;./_json&apos;
+import {applyDefaults, removeUndefinedValues} from &apos;./_util&apos;
+const env = process.env
+
+const debugLogger = env.FAUNA_DEBUG || env.NODE_DEBUG === &apos;fauna&apos; ? winston : null
+
+/**
+ * Directly communicates with FaunaDB via JSON.
+ *
+ * It is encouraged to pass e.g. {@link Ref} objects instead of raw JSON data.
+ *
+ * All methods return a converted JSON response.
+ * This is an object containing Arrays, strings, and other objects.
+ * Any {@link Ref} or {@link Set} values in it will also be parsed.
+ * (So instead of `{ &quot;@ref&quot;: &quot;classes/frogs/123&quot; }`,
+ * you will get `new Ref(&quot;classes/frogs/123&quot;)`.)
+ *
+ * There is no way to automatically convert to any other type, such as {@link Event},
+ * from the response; you&apos;ll have to do that yourself manually.
+ */
+export default class Client {
+  /**
+   *
+   * @param {string} options.domain Base URL for the FaunaDB server.
+   * @param {(&apos;http&apos;|&apos;https&apos;)} options.scheme HTTP scheme to use.
+   * @param {number} options.port Port of the FaunaDB server.
+   * @param {?Object} options.secret
+   *   Auth token for the FaunaDB server.
+   *   Passed straight to [request](https://github.com/request/request#http-authentication).
+   * @param {string} options.secret.user
+   * @param {string} options.secret.pass
+   * @param {?number} options.timeout Read timeout in seconds.
+   * @param {?Logger} options.logger
+   *   A [winston](https://github.com/winstonjs/winston) Logger
+   */
+  constructor(options) {
+    const opts = applyDefaults(options, {
+      domain: &apos;rest.faunadb.com&apos;,
+      scheme: &apos;https&apos;,
+      port: null,
+      secret: null,
+      timeout: 60,
+      logger: null
+    })
+
+    if (opts.port === null)
+      opts.port = opts.scheme === &apos;https&apos; ? 443 : 80
+
+    this._baseUrl = `${opts.scheme}://${opts.domain}:${opts.port}`
+    this._timeout = Math.floor(opts.timeout * 1000)
+    this._secret = opts.secret
+    this._logger = opts.logger
+  }
+
+  /**
+   * HTTP `GET`.
+   * See the [docs](https://faunadb.com/documentation/rest).
+   * @param {string|Ref} path Path relative the `domain` from the constructor.
+   * @param {Object} query URL parameters.
+   * @return {Promise&lt;Object&gt;} Converted JSON response.
+   */
+  get(path, query=null) {
+    return this._execute(&apos;GET&apos;, path, null, query)
+  }
+
+  /**
+   * HTTP `POST`.
+   * See the [docs](https://faunadb.com/documentation/rest).
+   * @param {string|Ref} path Path relative to the `domain` from the constructor.
+   * @param {Object} data Object to be converted to request JSON.
+   * @return {Promise&lt;Object&gt;} Converted JSON response.
+   */
+  post(path, data) {
+    return this._execute(&apos;POST&apos;, path, data)
+  }
+
+  /**
+   * Like {@link post}, but a `PUT` request.
+   * See the [docs](https://faunadb.com/documentation/rest).
+   */
+  put(path, data) {
+    return this._execute(&apos;PUT&apos;, path, data)
+  }
+
+  /**
+   * Like {@link post}, but a `PATCH` request.
+   * See the [docs](https://faunadb.com/documentation/rest).
+   */
+  patch(path, data) {
+    return this._execute(&apos;PATCH&apos;, path, data)
+  }
+
+  /**
+   * Like {@link post}, but a `DELETE` request.
+   * See the [docs](https://faunadb.com/documentation/rest).
+   */
+  delete(path, data) {
+    return this._execute(&apos;DELETE&apos;, path, data)
+  }
+
+  /**
+   * Use the FaunaDB query API.
+   * See the [docs](https://faunadb.com/documentation/queries)
+   * and the query functions in this documentation.
+   * @param expression {object} Created from query functions such as {@link add}.
+   * @return {Promise&lt;Object&gt;} Server&apos;s response to the query.
+   */
+  query(expression) {
+    return this._execute(&apos;POST&apos;, &apos;&apos;, expression)
+  }
+
+  /**
+   * Ping FaunaDB.
+   * See the [docs](https://faunadb.com/documentation/rest#other).
+   * @return {Promise&lt;string&gt;}
+   */
+  ping(scope, timeout) {
+    return this.get(&apos;ping&apos;, {scope, timeout})
+  }
+
+  _log(indented, logged) {
+    if (indented) {
+      const indent_str = &apos;  &apos;
+      logged = indent_str + logged.split(&apos;\n&apos;).join(`\n${indent_str}`)
+    }
+
+    if (debugLogger !== null)
+      debugLogger.info(logged)
+    if (this._logger !== null)
+      this._logger.info(logged)
+  }
+
+  async _execute(action, path, data, query=null) {
+    if (path instanceof Ref)
+      path = path.value
+    if (query !== null) {
+      query = removeUndefinedValues(query)
+      if (Object.keys(query).length === 0)
+        query = null
+    }
+
+    if (this._logger === null &amp;&amp; debugLogger === null) {
+      const {response, body} = await this._execute_without_logging(action, path, data, query)
+      return handleResponse(response, parseJSON(body))
+    } else {
+      const real_time_begin = Date.now()
+      const {response, body} = await this._execute_without_logging(action, path, data, query)
+      const real_time = Date.now() - real_time_begin
+
+      this._log(false, `Fauna ${action} /${path}${queryStringForLogging(query)}`)
+      this._log(true, `Credentials: ${JSON.stringify(this._secret)}`)
+      if (data)
+        this._log(true, `Request JSON: ${toJSON(data, true)}`)
+
+      const headers_json = toJSON(response.headers, true)
+      const response_object = parseJSON(body)
+      const response_json = toJSON(response_object, true)
+      this._log(true, `Response headers: ${headers_json}`)
+      this._log(true, `Response JSON: ${response_json}`)
+      const
+        statusCode = response.statusCode,
+        apiTime = response.headers[&apos;x-http-request-processing-time&apos;],
+        latency = Math.floor(real_time)
+      this._log(true,
+        `Response (${statusCode}): API processing ${apiTime}ms, network latency ${latency}ms`)
+      return handleResponse(response, response_object)
+    }
+  }
+
+  _execute_without_logging(action, path, data, query) {
+    return new Promise((resolve, reject) =&gt; {
+      // request has a bug when trying to request empty path.
+      if (path === &apos;&apos;)
+        path = &apos;/&apos;
+
+      const opts = {
+        method: action,
+        baseUrl: this._baseUrl,
+        url: path,
+        auth: this._secret,
+        qs: query,
+        body: data === null ? null : toJSON(data),
+        timeout: this._timeout
+      }
+
+      request(opts, (err, response, body) =&gt; {
+        if (err)
+          reject(err)
+        else
+          resolve({response, body})
+      })
+    })
+  }
+}
+
+const
+  handleResponse = (response, response_object) =&gt; {
+    const code = response.statusCode
+    if (200 &lt;= code &amp;&amp; code &lt;= 299)
+      return response_object.resource
+    else
+      switch (code) {
+        case 400:
+          throw new BadRequest(response_object)
+        case 401:
+          throw new Unauthorized(response_object)
+        case 403:
+          throw new PermissionDenied(response_object)
+        case 404:
+          throw new NotFound(response_object)
+        case 405:
+          throw new MethodNotAllowed(response_object)
+        case 500:
+          throw new InternalError(response_object)
+        case 503:
+          throw new UnavailableError(response_object)
+        default:
+          throw new FaunaHTTPError(response_object)
+      }
+  },
+
+  queryStringForLogging = query =&gt;
+    query ? `?${Object.keys(query).map(key =&gt; `${key}=${query[key]}`).join(&apos;&amp;&apos;)}` : &apos;&apos;
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.1)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/model/Builtin.js | FaunaDB API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+  <script src="script/manual.js"></script>
+</head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  <a href="test.html" data-ice="testLink">Test</a>
+  <a data-ice="repoURL" href="https://github.com/faunadb/faunadb-js" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/AsyncStream.js~AsyncStream.html">AsyncStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PageStream.js~PageStream.html">PageStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/client.js~Client.html">Client</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~BadRequest.html">BadRequest</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaError.html">FaunaError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaHTTPError.html">FaunaHTTPError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~InternalError.html">InternalError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~InvalidQuery.html">InvalidQuery</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~InvalidValue.html">InvalidValue</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~MethodNotAllowed.html">MethodNotAllowed</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~NotFound.html">NotFound</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~PermissionDenied.html">PermissionDenied</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~Unauthorized.html">Unauthorized</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~UnavailableError.html">UnavailableError</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~Event.html">Event</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~FaunaSet.html">FaunaSet</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~Page.html">Page</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/objects.js~Ref.html">Ref</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-add">add</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-concat">concat</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-contains">contains</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-count">count</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-create">create</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-delete_expr">delete_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-difference">difference</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-divide">divide</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-do_expr">do_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-equals">equals</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-exists">exists</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-foreach">foreach</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-get">get</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-if_expr">if_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-intersection">intersection</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-join">join</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-lambda">lambda</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-lambda_expr">lambda_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-let_expr">let_expr</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-map">map</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-match">match</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-multiply">multiply</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-object">object</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-paginate">paginate</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-quote">quote</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-replace">replace</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-select">select</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-selectWithDefault">selectWithDefault</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-subtract">subtract</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-union">union</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-update">update</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-variable">variable</a></span></span></li>
+<li data-ice="doc"><div data-ice="dirPath" class="nav-dir-path">model</div><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Builtin.html">Builtin</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Class.html">Class</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~ClassIndex.html">ClassIndex</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Database.html">Database</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Index.html">Index</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Builtin.js~Key.html">Key</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Codec.js~Codec.html">Codec</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Field.js~Field.html">Field</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/model/Model.js~Model.html">Model</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-variable">V</span><span data-ice="name"><span><a href="variable/index.html#static-variable-RefCodec">RefCodec</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/model/Builtin.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import assert from &apos;assert&apos;
+import {Ref} from &apos;../objects&apos;
+import * as query from &apos;../query&apos;
+import {RefCodec} from &apos;./Codec&apos;
+import Model from &apos;./Model&apos;
+
+/**
+ * Builtins are special classes that exist by default.
+ * If you want to store custom data, you can add new fields with e.g. `Database.addField`.
+ */
+export default class Builtin extends Model {
+  /** @private */
+  static setup(...args) {
+    super.setup(...args)
+    assert(!this.isAbstract())
+    // classRef does not have &apos;classes&apos; in front
+    this.classRef = new Ref(this.faunaClassName)
+    for (const fieldName in this.fields)
+      // Builtin fields do not have &apos;data&apos; in front of path
+      this.fields[fieldName].path = [fieldName]
+  }
+}
+
+/** See the [docs](https://faunadb.com/documentation/objects#databases). */
+export class Database extends Builtin { }
+Database.setup(&apos;databases&apos;, {name: {}, api_version: {}})
+
+/** See the [docs](https://faunadb.com/documentation/objects#keys). */
+export class Key extends Builtin { }
+Key.setup(&apos;keys&apos;, {
+  database: {codec: RefCodec},
+  role: {},
+  secret: {},
+  hashed_secret: {}
+})
+
+/** See the [docs](https://faunadb.com/documentation/objects#classes). */
+export class Class extends Builtin {
+  /**
+   * Creates a Class for the {@link Model} class.
+   * @param {Client} client
+   * @param {Function} modelClass
+   * @param {Object} data Field values for the Class object.
+   * @return {Promise&lt;Class&gt;}
+   */
+  static async createForModel(client, modelClass, data={}) {
+    return await this.create(client, Object.assign({name: modelClass.faunaClassName}, data))
+  }
+
+  /**
+   * Gets the Class associated with a {@link Model} class.
+   * @param {Client} client
+   * @param {Function} modelClass
+   * @return {Promise&lt;Class&gt;}
+   */
+  static async getForModel(client, modelClass) {
+    return await this.get(client, modelClass.classRef)
+  }
+}
+Class.setup(&apos;classes&apos;, {
+  name: {},
+  history_days: {},
+  ttl_days: {},
+  permissions: {}
+})
+
+/** See the [docs](https://faunadb.com/documentation/objects#indexes). */
+export class Index extends Builtin {
+  /**
+   * Creates an Index for a {@link Model} class.
+   * The index may not be usable immediately. See the docs.
+   * @param {Client} client
+   * @param {Function} modelClass
+   * @param {string} name
+   * @param {string|Array&lt;{path: string}&gt;} terms
+   * @param {Object} data Field values for the Index object.
+   * @return {Promise&lt;Index&gt;}
+   */
+  static async createForModel(client, modelClass, name, terms, data={}) {
+    if (typeof terms === &apos;string&apos;)
+      terms = [{path: `data.${terms}`}]
+    const source = await Class.getForModel(client, modelClass)
+    return await this.create(client, Object.assign({source: source.ref, name, terms}, data))
+  }
+
+  /**
+   * Set query representing all instances whose value matches the index&apos;s term.
+   *
+   * See also {@link Model.pageIndex} and {@link Model.streamIndex}.
+   * @param matchedValues For each of `this.terms`, a value to match it.
+   * @return {object} A query set made by {@link match}.
+   */
+  match(...matchedValues) {
+    // Make query slightly neater by only using array if necessary.
+    if (matchedValues.length === 1)
+      matchedValues = matchedValues[0]
+    return query.match(matchedValues, this.ref)
+  }
+
+  /**
+   * Returns raw data of the first instance matched by this index.
+   * Typically this will be used for an index with `unique: true`.
+   * See also {@link Model.getFromIndex}.
+   * @param matchedValues Same as for {@link match}.
+   * @return {Promise&lt;Object&gt;}
+   */
+  async getSingle(...matchedValues) {
+    return await this.client.query(query.get(this.match(...matchedValues)))
+  }
+}
+Index.setup(&apos;indexes&apos;, {
+  name: {},
+  source: {codec: RefCodec},
+  terms: {},
+  values: {},
+  unique: {},
+  permissions: {},
+  active: {}
+})
+
+/**
+ * Index over all instances of a class.
+ * Not a different faunadb class; just a specialized Index.
+ */
+export class ClassIndex extends Index {
+  /**
+   * Creates a class index for the given model.
+   * If the model is `classes/xyz`, the class index will be `indexes/xyz`.
+   * @param {Client} client
+   * @param {Function} modelClass
+   * @param {Object} data Field values for the ClassIndex object.
+   * @return {Promise&lt;ClassIndex&gt;}
+   */
+  static async createForModel(client, modelClass, data={}) {
+    const name = modelClass.faunaClassName
+    const source = await Class.getForModel(client, modelClass)
+    const terms = [{path: &apos;class&apos;}]
+    return await ClassIndex.create(client, Object.assign({source: source.ref, name, terms}, data))
+  }
+
+  /**
+   * Fetches the class index.
+   * @param {Client} client
+   * @param {Function} modelClass
+   * @return {Promise&lt;ClassIndex&gt;}
+   */
+  static async getForModel(client, modelClass) {
+    return await ClassIndex.getById(client, modelClass.faunaClassName)
+  }
+
+  /**
+   * Query set of all instances of the class.
+   * @return {object} A query set made by {@link match}.
+   */
+  match() {
+    return query.match(this.getEncoded(&apos;source&apos;), this.ref)
+  }
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.4.1)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
