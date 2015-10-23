@@ -367,7 +367,7 @@ export default class Model {
     if (!(typeof resource === &apos;object&apos; &amp;&amp; resource.constructor === Object))
       throw new Error(&apos;Expected to initialize from plain object resource.&apos;)
     const expectedClass = this.constructor.classRef
-    if (!resource.class.equals(expectedClass))
+    if (!(resource.class instanceof Ref) || !resource.class.equals(expectedClass))
       throw new InvalidValue(
         `Trying to initialize from resource of class ${resource.class}; expected ${expectedClass}`)
 

@@ -156,19 +156,24 @@ describe(&apos;query&apos;, () =&gt; {
   it(&apos;lambda&apos;, () =&gt; {
     assert.deepEqual(
       query.lambda(a =&gt; query.add(a, a)),
-      {lambda: &apos;a&apos;, expr: {add: [{var: &apos;a&apos;}, {var: &apos;a&apos;}]}})
+      {lambda: &apos;auto0&apos;, expr: {add: [{var: &apos;auto0&apos;}, {var: &apos;auto0&apos;}]}})
 
     assert.deepEqual(
       query.lambda(a =&gt; query.lambda(b =&gt; query.lambda(c =&gt; [a, b, c]))),
       {
-        lambda: &apos;a&apos;,
-        expr: {lambda: &apos;b&apos;, expr: {lambda: &apos;c&apos;, expr: [{var: &apos;a&apos;}, {var: &apos;b&apos;}, {var: &apos;c&apos;}]}}
+        lambda: &apos;auto0&apos;,
+        expr: {
+          lambda: &apos;auto1&apos;,
+          expr: {
+            lambda: &apos;auto2&apos;,
+            expr: [{var: &apos;auto0&apos;}, {var: &apos;auto1&apos;}, {var: &apos;auto2&apos;}]}
+          }
       })
 
     // Error in function should not affect future queries.
     try { query.lambda(() =&gt; { throw new Error() }) } catch (err) { }
 
-    assert.deepEqual(query.lambda(a =&gt; a), {lambda: &apos;a&apos;, expr: {var: &apos;a&apos;}})
+    assert.deepEqual(query.lambda(a =&gt; a), {lambda: &apos;auto0&apos;, expr: {var: &apos;auto0&apos;}})
   })
 
   it(&apos;map&apos;, async function() {

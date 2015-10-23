@@ -127,29 +127,28 @@ export function quote(quote) {
   return {quote}
 }
 
-let lambdaAutoVarName = &apos;a&apos;
+let lambdaAutoVarNumber = 0
 
 /**
  * See the [docs](https://faunadb.com/documentation/queries#basic_forms).
  * This form generates the names of lambda parameters for you, and is called like:
  *
  *     query.lambda(a =&gt; query.add(a, a))
- *     // Produces: {lambda: &apos;a&apos;, expr: {add: [{var: &apos;a&apos;}, {var: &apos;a&apos;}]}}
+ *     // Produces: {lambda: &apos;auto0&apos;, expr: {add: [{var: &apos;auto0&apos;}, {var: &apos;auto0&apos;}]}}
  *
  * You can also use {@link lambda_expr} directly.
  *
  * @param {function} lambda_body Takes a variable and uses it to construct an expression.
  */
 export function lambda(lambda_body) {
-  const varName = lambdaAutoVarName
-  // Move var name for inner closures from &apos;a&apos; to &apos;b&apos;, or &apos;b&apos; to &apos;c&apos;, etc.
-  lambdaAutoVarName = String.fromCharCode(lambdaAutoVarName.charCodeAt(0) + 1)
+  const varName = `auto${lambdaAutoVarNumber}`
+  lambdaAutoVarNumber += 1
 
   // Make sure lambdaVarName returns to its former value even if there are errors.
   try {
     return lambda_expr(varName, lambda_body(variable(varName)))
   } finally {
-    lambdaAutoVarName = varName
+    lambdaAutoVarNumber -= 1
   }
 }
 

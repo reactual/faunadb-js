@@ -967,49 +967,49 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber219",
+    "test-file/test/query_test.js.html#lineNumber224",
     "query add",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber193",
+    "test-file/test/query_test.js.html#lineNumber198",
     "query concat",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber198",
+    "test-file/test/query_test.js.html#lineNumber203",
     "query contains",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber117",
+    "test-file/test/query_test.js.html#lineNumber122",
     "query count",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber125",
+    "test-file/test/query_test.js.html#lineNumber130",
     "query create",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber144",
+    "test-file/test/query_test.js.html#lineNumber149",
     "query delete",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber162",
+    "test-file/test/query_test.js.html#lineNumber167",
     "query difference",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber235",
+    "test-file/test/query_test.js.html#lineNumber240",
     "query divide",
     "test"
   ],
@@ -1021,25 +1021,25 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber186",
+    "test-file/test/query_test.js.html#lineNumber191",
     "query equals",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber110",
+    "test-file/test/query_test.js.html#lineNumber115",
     "query exists",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber85",
+    "test-file/test/query_test.js.html#lineNumber90",
     "query foreach",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber93",
+    "test-file/test/query_test.js.html#lineNumber98",
     "query get",
     "test"
   ],
@@ -1051,13 +1051,13 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber158",
+    "test-file/test/query_test.js.html#lineNumber163",
     "query intersection",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber166",
+    "test-file/test/query_test.js.html#lineNumber171",
     "query join",
     "test"
   ],
@@ -1075,19 +1075,19 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber75",
+    "test-file/test/query_test.js.html#lineNumber80",
     "query map",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber150",
+    "test-file/test/query_test.js.html#lineNumber155",
     "query match",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber224",
+    "test-file/test/query_test.js.html#lineNumber229",
     "query multiply",
     "test"
   ],
@@ -1099,7 +1099,7 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber98",
+    "test-file/test/query_test.js.html#lineNumber103",
     "query paginate",
     "test"
   ],
@@ -1111,43 +1111,43 @@ window.esdocSearchIndex = [
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber138",
+    "test-file/test/query_test.js.html#lineNumber143",
     "query replace",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber205",
+    "test-file/test/query_test.js.html#lineNumber210",
     "query select",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber213",
+    "test-file/test/query_test.js.html#lineNumber218",
     "query select for array",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber229",
+    "test-file/test/query_test.js.html#lineNumber234",
     "query subtract",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber154",
+    "test-file/test/query_test.js.html#lineNumber159",
     "query union",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber132",
+    "test-file/test/query_test.js.html#lineNumber137",
     "query update",
     "test"
   ],
   [
     "",
-    "test-file/test/query_test.js.html#lineNumber243",
+    "test-file/test/query_test.js.html#lineNumber248",
     "query varargs",
     "test"
   ],

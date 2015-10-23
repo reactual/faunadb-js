@@ -2677,7 +2677,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import {InvalidQuery, InvalidValue} from '../errors'\nimport {Page, Ref} from '../objects'\nimport PageStream from '../PageStream'\nimport * as query from '../query'\nimport {applyDefaults} from '../_util'\nimport Field from './Field'\nimport {calculateDiff, getPath, objectDup, setPath} from './_util'\n\n/**\n * Base class for all models.\n *\n * Models represent database instances.\n * They link a FaunaDB class to a JavaScript class.\n *\n * The basic format is:\n *\n *     class MyModel extends Model {\n *       ... your methods ...\n *     }\n *     // define class name and fields\n *     MyModel.setup('my_models', {\n *       x: {},\n *       y: {converter: new RefConverter(MyModel)}\n *     })\n *\n * {@link Field}s will be constructed and\n * properties will be generated for each field passed to {@link setup}.\n *\n * {@link Class.createForModel} must be called before you can save model instances.\n */\nexport default class Model {\n  /**\n   * @param {string} faunaClassName\n   * @param {object} fields\n   *   Each `key: value` pair is the parameters for `addField`.\n   */\n  static setup(faunaClassName, fields={}) {\n    this.faunaClassName = faunaClassName\n    /**\n     * {@link Ref} for the class itself.\n     *\n     * `instance.ref` should be the same as `new Ref(instance.constructor.classRef, instance.id)`.\n     */\n    this.classRef = new Ref('classes', faunaClassName)\n    /** Object of all fields assigned to this class. */\n    this.fields = {}\n    for (const fieldName in fields)\n      this.addField(fieldName, fields[fieldName])\n  }\n\n  /**\n   * Adds a new field to the class, making getters and setters.\n   *\n   * @param {string} fieldName\n   *   Name for the field. A getter and setter will be made with this name.\n   *   If `fieldOpts.path` is not defined, it defaults to `['data', fieldName]`.\n   * @param {object} fieldOpts\n   *   Parameters for the {@link Field} constructor.\n   */\n  static addField(fieldName, fieldOpts={}) {\n    if (fieldName === 'ref' || fieldName === 'ts')\n      throw new Error('Forbidden field name.')\n\n    if (fieldOpts.path == null)\n      fieldOpts.path = ['data', fieldName]\n    const field = new Field(fieldOpts)\n    this.fields[fieldName] = field\n\n    const {get, set} = field.codec === null ?\n      {\n        get() {\n          return getPath(field.path, this._current)\n        },\n        set(value) {\n          setPath(field.path, value, this._current)\n        }\n      } : {\n        get() {\n          const encoded = getPath(field.path, this._current)\n          const decoded = field.codec.decode(encoded, this)\n          return decoded\n        },\n        set(value) {\n          const encoded = field.codec.encode(value, this)\n          setPath(field.path, encoded, this._current)\n        }\n      }\n    Object.defineProperty(this.prototype, fieldName, {get, set})\n  }\n\n  /**\n   * Initialize (but do not save) a new instance.\n   * @param {Client} client\n   * @param {object} data Fields values for the new instance.\n   */\n  constructor(client, data) {\n    /** Client instance that the model uses to save to the database. */\n    this.client = client\n\n    this._original = {}\n    this._initState()\n\n    for (const fieldName in data) {\n      if (!(fieldName in this.constructor.fields))\n        throw new InvalidValue(`No such field ${fieldName}`)\n      // This calls the field's setter.\n      this[fieldName] = data[fieldName]\n    }\n  }\n\n  /** {@link Ref} of this instance in the database. `null` if {@link isNewInstance}. */\n  get ref() {\n    const ref = this._current.ref\n    return ref === undefined ? null : ref\n  }\n\n  /** The id portion of this instance's {@link Ref}. Fails if {@link isNewInstance}. */\n  get id() {\n    return this.ref === null ? null : this.ref.id\n  }\n\n  /**\n   * Microsecond UNIX timestamp of the latest {@link save}.\n   * `null` if {@link isNewInstance}.\n   */\n  get ts() {\n    const ts = this._current.ts\n    return ts === undefined ? null : ts\n  }\n\n  /** For a field with a {@link Converter}, gets the encoded value. */\n  getEncoded(fieldName) {\n    const field = this.constructor.fields[fieldName]\n    return getPath(field.path, this._current)\n  }\n\n  /** `false` if this has ever been saved to the database. */\n  isNewInstance() {\n    return !('ref' in this._current)\n  }\n\n  /**\n   * Removes this instance from the database.\n   * @return {Promise<Object>}\n   */\n  async delete() {\n    return await this.client.query(this.deleteQuery())\n  }\n\n  /**\n   * Query that deletes this instance.\n   * @return {Object} A {@link delete_expr} expression.\n   */\n  deleteQuery() {\n    if (this.isNewInstance())\n      throw new InvalidQuery('Instance does not exist in the database.')\n    return query.delete_expr(this.ref)\n  }\n\n  /**\n   * Executes {@link saveQuery}.\n   * @param replace Same as for {@link saveQuery}.\n   * @return {Promise<void>}\n   */\n  async save(replace=false) {\n    this._initFromResource(await this.client.query(this.saveQuery(replace)))\n  }\n\n  /**\n   * Query to save this instance to the database.\n   * If {@link isNewInstance}, creates it and sets `ref` and `ts`.\n   * Otherwise, updates any changed fields.\n   *\n   * @param replace\n   *   If true, updates will update *all* fields\n   *   using {@link replaceQuery} instead of {@link updateQuery}.\n   *   See the [docs](https://faunadb.com/documentation/queries#write_functions).\n   * @return {Object} A query expression, ready to use with {@link Client#query}.\n   */\n  saveQuery(replace=false) {\n    return this.isNewInstance() ?\n      this.createQuery() :\n      replace ? this.replaceQuery() : this.updateQuery()\n  }\n\n  /**\n   * Query to create a new instance.\n   * @return {Object} A {@link create} expression.\n   */\n  createQuery() {\n    if (!this.isNewInstance())\n      throw new InvalidQuery('Trying to create instance that has already been created.')\n    return query.create(this.constructor.classRef, query.quote(this._current))\n  }\n\n  /**\n   * Query to replace this instance's data.\n   * @return {Object} A {@link replace} expression.\n   */\n  replaceQuery() {\n    if (this.isNewInstance())\n      throw new InvalidQuery('Instance has not yet been created.')\n    return query.replace(this.ref, query.quote(this._current))\n  }\n\n  /**\n   * Query to update this instance's data.\n   * @return {Object} a {@link update} expression.\n   */\n  updateQuery() {\n    if (this.isNewInstance())\n      throw new InvalidQuery('Instance has not yet been created.')\n    return query.update(this.ref, query.quote(this._diff()))\n  }\n\n  /** A Model class is considered abstract if {@link setup} was never called. */\n  static isAbstract() {\n    return this.faunaClassName === undefined\n  }\n\n  /**\n   * Gets the instance of this class specified by `ref`.\n   * @param {Client} client\n   * @param {Ref} ref Must be a reference to an instance of this class.\n   * @return {Promise<this>} An instance of this class.\n   */\n  static async get(client, ref) {\n    return this.getFromResource(client, await client.get(ref))\n  }\n\n  /**\n   * Gets the instance of this class specified by `id`.\n   * @param {Client} client\n   * @param {number|string} instanceId `id` portion of a {@link Ref} for an instance of this class.\n   * @return {Promise<this>} An instance of this class.\n   */\n  static async getById(client, instanceId) {\n    return await this.get(client, new Ref(this.classRef, instanceId))\n  }\n\n  /**\n   * Initializes and saves a new instance.\n   * @param {Client} client\n   * @param {Object} data Field values for the new instance.\n   * @return {Promise<this>} An instance of this class.\n   */\n  static async create(client, data={}) {\n    const instance = new this(client, data)\n    instance._initFromResource(await client.post(this.classRef, instance._current))\n    return instance\n  }\n\n  /**\n   * Creates a new instance from query results.\n   *\n   * See also {@link get}.\n   * @param {Client} client\n   * @param {Object} resource Raw instance data, usually the result of a query.\n   * @return {this} An instance of this class.\n   */\n  static getFromResource(client, resource) {\n    const instance = new this(client)\n    instance._initFromResource(resource)\n    return instance\n  }\n\n  _initFromResource(resource) {\n    if (!(typeof resource === 'object' && resource.constructor === Object))\n      throw new Error('Expected to initialize from plain object resource.')\n    const expectedClass = this.constructor.classRef\n    if (!resource.class.equals(expectedClass))\n      throw new InvalidValue(\n        `Trying to initialize from resource of class ${resource.class}; expected ${expectedClass}`)\n\n    this._original = resource\n    this._initState()\n  }\n\n  _initState() {\n    // New JSON data of the instance.\n    this._current = objectDup(this._original)\n  }\n\n  _diff() {\n    return calculateDiff(this._original, this._current)\n  }\n\n  /**\n   * Paginates a set query and converts results to instances of this class.\n   *\n   * @param {Client} client\n   * @param instanceSet Query set of instances of this class.\n   * @param pageParams Params to {@link paginate}.\n   * @return {Promise<Page<this>>} Page whose elements are instances of this class.\n   */\n  static async page(client, instanceSet, pageParams={}) {\n    return await this._mapPage(client, instanceSet, query.lambda(query.get), pageParams)\n  }\n\n  /**\n   * Calls {@link Index#match} and then works just like {@link page}.\n   *\n   * @param {Index} index\n   * @param matchedValues Values for {@link Index.match}.\n   * @param pageParams Params to {@link query.paginate}.\n   * @return {Promise<Page<this>>} Page whose elements are instances of this class.\n   */\n  static async pageIndex(index, matchedValues, pageParams={}) {\n    if (!(matchedValues instanceof Array))\n      matchedValues = [matchedValues]\n    const client = index.client\n    const matchSet = index.match(...matchedValues)\n    const getter = indexRefGetter(index)\n    return this._mapPage(client, matchSet, getter, pageParams)\n  }\n\n  static async _mapPage(client, instanceSet, pageLambda, pageParams) {\n    const pageQuery = query.paginate(instanceSet, pageParams)\n    const mapQuery = query.map(pageLambda, pageQuery)\n    const page = Page.fromRaw(await client.query(mapQuery))\n    return page.mapData(resource => this.getFromResource(client, resource))\n  }\n\n  /**\n   * Stream for `instanceSet` that converts results to model instances.\n   * @param {Client} client\n   * @param instanceSet Query set of {@link Ref}s to instances of this class.\n   * @param {number} opts.pageSize Size of each page.\n   * @return {PageStream<this>} Stream whose elements are instances of this class.\n   */\n  static stream(client, instanceSet, opts={}) {\n    const {pageSize} = applyDefaults(opts, {\n      pageSize: undefined\n    })\n    return PageStream.elements(client, instanceSet, {\n      pageSize,\n      mapLambda: query.lambda(query.get)\n    }).map(instance => this.getFromResource(client, instance))\n  }\n\n  /**\n   * Calls {@link Index#match} and then works just like {@link pageStream}.\n   *\n   * @param {Index} index Index whose instances are instances of this class.\n   * @param matchedValues Matched value or array of matched values, passed into {@link Index.match}.\n   * @param {number} opts.pageSize Size of each page.\n   * @return {PageStream<this>} Stream whose elements are instances of this class.\n   */\n  static streamIndex(index, matchedValues, opts={}) {\n    const {pageSize} = applyDefaults(opts, {\n      pageSize: undefined\n    })\n    const client = index.client\n    if (!(matchedValues instanceof Array))\n      matchedValues = [matchedValues]\n    const matchSet = index.match(...matchedValues)\n    return PageStream.elements(client, matchSet, {\n      pageSize,\n      mapLambda: indexRefGetter(index)\n    }).map(instance => this.getFromResource(client, instance))\n  }\n\n  /**\n   * Returns the first instance matched by the index.\n   * @param {Index} index\n   * @param matchedValues Same as for {@link Index.match}.\n   * @return {Promise<this>} Instance of this class.\n   */\n  static async getFromIndex(index, ...matchedValues) {\n    return this.getFromResource(index.client, await index.getSingle(...matchedValues))\n  }\n\n  /** @ignore */\n  toString() {\n    const fields = Object.keys(this.constructor.fields).map(key =>\n      `${key}: ${this[key]}`).join(', ')\n    return `${this.constructor.name}(${fields})`\n  }\n}\n\n/** Lambda expression for getting an instance Ref out of a match result. */\nconst indexRefGetter = index =>\n  index.values ?\n    query.lambda(arr => query.get(query.select(index.values.length, arr))) :\n    query.lambda(query.get)\n"
+    "content": "import {InvalidQuery, InvalidValue} from '../errors'\nimport {Page, Ref} from '../objects'\nimport PageStream from '../PageStream'\nimport * as query from '../query'\nimport {applyDefaults} from '../_util'\nimport Field from './Field'\nimport {calculateDiff, getPath, objectDup, setPath} from './_util'\n\n/**\n * Base class for all models.\n *\n * Models represent database instances.\n * They link a FaunaDB class to a JavaScript class.\n *\n * The basic format is:\n *\n *     class MyModel extends Model {\n *       ... your methods ...\n *     }\n *     // define class name and fields\n *     MyModel.setup('my_models', {\n *       x: {},\n *       y: {converter: new RefConverter(MyModel)}\n *     })\n *\n * {@link Field}s will be constructed and\n * properties will be generated for each field passed to {@link setup}.\n *\n * {@link Class.createForModel} must be called before you can save model instances.\n */\nexport default class Model {\n  /**\n   * @param {string} faunaClassName\n   * @param {object} fields\n   *   Each `key: value` pair is the parameters for `addField`.\n   */\n  static setup(faunaClassName, fields={}) {\n    this.faunaClassName = faunaClassName\n    /**\n     * {@link Ref} for the class itself.\n     *\n     * `instance.ref` should be the same as `new Ref(instance.constructor.classRef, instance.id)`.\n     */\n    this.classRef = new Ref('classes', faunaClassName)\n    /** Object of all fields assigned to this class. */\n    this.fields = {}\n    for (const fieldName in fields)\n      this.addField(fieldName, fields[fieldName])\n  }\n\n  /**\n   * Adds a new field to the class, making getters and setters.\n   *\n   * @param {string} fieldName\n   *   Name for the field. A getter and setter will be made with this name.\n   *   If `fieldOpts.path` is not defined, it defaults to `['data', fieldName]`.\n   * @param {object} fieldOpts\n   *   Parameters for the {@link Field} constructor.\n   */\n  static addField(fieldName, fieldOpts={}) {\n    if (fieldName === 'ref' || fieldName === 'ts')\n      throw new Error('Forbidden field name.')\n\n    if (fieldOpts.path == null)\n      fieldOpts.path = ['data', fieldName]\n    const field = new Field(fieldOpts)\n    this.fields[fieldName] = field\n\n    const {get, set} = field.codec === null ?\n      {\n        get() {\n          return getPath(field.path, this._current)\n        },\n        set(value) {\n          setPath(field.path, value, this._current)\n        }\n      } : {\n        get() {\n          const encoded = getPath(field.path, this._current)\n          const decoded = field.codec.decode(encoded, this)\n          return decoded\n        },\n        set(value) {\n          const encoded = field.codec.encode(value, this)\n          setPath(field.path, encoded, this._current)\n        }\n      }\n    Object.defineProperty(this.prototype, fieldName, {get, set})\n  }\n\n  /**\n   * Initialize (but do not save) a new instance.\n   * @param {Client} client\n   * @param {object} data Fields values for the new instance.\n   */\n  constructor(client, data) {\n    /** Client instance that the model uses to save to the database. */\n    this.client = client\n\n    this._original = {}\n    this._initState()\n\n    for (const fieldName in data) {\n      if (!(fieldName in this.constructor.fields))\n        throw new InvalidValue(`No such field ${fieldName}`)\n      // This calls the field's setter.\n      this[fieldName] = data[fieldName]\n    }\n  }\n\n  /** {@link Ref} of this instance in the database. `null` if {@link isNewInstance}. */\n  get ref() {\n    const ref = this._current.ref\n    return ref === undefined ? null : ref\n  }\n\n  /** The id portion of this instance's {@link Ref}. Fails if {@link isNewInstance}. */\n  get id() {\n    return this.ref === null ? null : this.ref.id\n  }\n\n  /**\n   * Microsecond UNIX timestamp of the latest {@link save}.\n   * `null` if {@link isNewInstance}.\n   */\n  get ts() {\n    const ts = this._current.ts\n    return ts === undefined ? null : ts\n  }\n\n  /** For a field with a {@link Converter}, gets the encoded value. */\n  getEncoded(fieldName) {\n    const field = this.constructor.fields[fieldName]\n    return getPath(field.path, this._current)\n  }\n\n  /** `false` if this has ever been saved to the database. */\n  isNewInstance() {\n    return !('ref' in this._current)\n  }\n\n  /**\n   * Removes this instance from the database.\n   * @return {Promise<Object>}\n   */\n  async delete() {\n    return await this.client.query(this.deleteQuery())\n  }\n\n  /**\n   * Query that deletes this instance.\n   * @return {Object} A {@link delete_expr} expression.\n   */\n  deleteQuery() {\n    if (this.isNewInstance())\n      throw new InvalidQuery('Instance does not exist in the database.')\n    return query.delete_expr(this.ref)\n  }\n\n  /**\n   * Executes {@link saveQuery}.\n   * @param replace Same as for {@link saveQuery}.\n   * @return {Promise<void>}\n   */\n  async save(replace=false) {\n    this._initFromResource(await this.client.query(this.saveQuery(replace)))\n  }\n\n  /**\n   * Query to save this instance to the database.\n   * If {@link isNewInstance}, creates it and sets `ref` and `ts`.\n   * Otherwise, updates any changed fields.\n   *\n   * @param replace\n   *   If true, updates will update *all* fields\n   *   using {@link replaceQuery} instead of {@link updateQuery}.\n   *   See the [docs](https://faunadb.com/documentation/queries#write_functions).\n   * @return {Object} A query expression, ready to use with {@link Client#query}.\n   */\n  saveQuery(replace=false) {\n    return this.isNewInstance() ?\n      this.createQuery() :\n      replace ? this.replaceQuery() : this.updateQuery()\n  }\n\n  /**\n   * Query to create a new instance.\n   * @return {Object} A {@link create} expression.\n   */\n  createQuery() {\n    if (!this.isNewInstance())\n      throw new InvalidQuery('Trying to create instance that has already been created.')\n    return query.create(this.constructor.classRef, query.quote(this._current))\n  }\n\n  /**\n   * Query to replace this instance's data.\n   * @return {Object} A {@link replace} expression.\n   */\n  replaceQuery() {\n    if (this.isNewInstance())\n      throw new InvalidQuery('Instance has not yet been created.')\n    return query.replace(this.ref, query.quote(this._current))\n  }\n\n  /**\n   * Query to update this instance's data.\n   * @return {Object} a {@link update} expression.\n   */\n  updateQuery() {\n    if (this.isNewInstance())\n      throw new InvalidQuery('Instance has not yet been created.')\n    return query.update(this.ref, query.quote(this._diff()))\n  }\n\n  /** A Model class is considered abstract if {@link setup} was never called. */\n  static isAbstract() {\n    return this.faunaClassName === undefined\n  }\n\n  /**\n   * Gets the instance of this class specified by `ref`.\n   * @param {Client} client\n   * @param {Ref} ref Must be a reference to an instance of this class.\n   * @return {Promise<this>} An instance of this class.\n   */\n  static async get(client, ref) {\n    return this.getFromResource(client, await client.get(ref))\n  }\n\n  /**\n   * Gets the instance of this class specified by `id`.\n   * @param {Client} client\n   * @param {number|string} instanceId `id` portion of a {@link Ref} for an instance of this class.\n   * @return {Promise<this>} An instance of this class.\n   */\n  static async getById(client, instanceId) {\n    return await this.get(client, new Ref(this.classRef, instanceId))\n  }\n\n  /**\n   * Initializes and saves a new instance.\n   * @param {Client} client\n   * @param {Object} data Field values for the new instance.\n   * @return {Promise<this>} An instance of this class.\n   */\n  static async create(client, data={}) {\n    const instance = new this(client, data)\n    instance._initFromResource(await client.post(this.classRef, instance._current))\n    return instance\n  }\n\n  /**\n   * Creates a new instance from query results.\n   *\n   * See also {@link get}.\n   * @param {Client} client\n   * @param {Object} resource Raw instance data, usually the result of a query.\n   * @return {this} An instance of this class.\n   */\n  static getFromResource(client, resource) {\n    const instance = new this(client)\n    instance._initFromResource(resource)\n    return instance\n  }\n\n  _initFromResource(resource) {\n    if (!(typeof resource === 'object' && resource.constructor === Object))\n      throw new Error('Expected to initialize from plain object resource.')\n    const expectedClass = this.constructor.classRef\n    if (!(resource.class instanceof Ref) || !resource.class.equals(expectedClass))\n      throw new InvalidValue(\n        `Trying to initialize from resource of class ${resource.class}; expected ${expectedClass}`)\n\n    this._original = resource\n    this._initState()\n  }\n\n  _initState() {\n    // New JSON data of the instance.\n    this._current = objectDup(this._original)\n  }\n\n  _diff() {\n    return calculateDiff(this._original, this._current)\n  }\n\n  /**\n   * Paginates a set query and converts results to instances of this class.\n   *\n   * @param {Client} client\n   * @param instanceSet Query set of instances of this class.\n   * @param pageParams Params to {@link paginate}.\n   * @return {Promise<Page<this>>} Page whose elements are instances of this class.\n   */\n  static async page(client, instanceSet, pageParams={}) {\n    return await this._mapPage(client, instanceSet, query.lambda(query.get), pageParams)\n  }\n\n  /**\n   * Calls {@link Index#match} and then works just like {@link page}.\n   *\n   * @param {Index} index\n   * @param matchedValues Values for {@link Index.match}.\n   * @param pageParams Params to {@link query.paginate}.\n   * @return {Promise<Page<this>>} Page whose elements are instances of this class.\n   */\n  static async pageIndex(index, matchedValues, pageParams={}) {\n    if (!(matchedValues instanceof Array))\n      matchedValues = [matchedValues]\n    const client = index.client\n    const matchSet = index.match(...matchedValues)\n    const getter = indexRefGetter(index)\n    return this._mapPage(client, matchSet, getter, pageParams)\n  }\n\n  static async _mapPage(client, instanceSet, pageLambda, pageParams) {\n    const pageQuery = query.paginate(instanceSet, pageParams)\n    const mapQuery = query.map(pageLambda, pageQuery)\n    const page = Page.fromRaw(await client.query(mapQuery))\n    return page.mapData(resource => this.getFromResource(client, resource))\n  }\n\n  /**\n   * Stream for `instanceSet` that converts results to model instances.\n   * @param {Client} client\n   * @param instanceSet Query set of {@link Ref}s to instances of this class.\n   * @param {number} opts.pageSize Size of each page.\n   * @return {PageStream<this>} Stream whose elements are instances of this class.\n   */\n  static stream(client, instanceSet, opts={}) {\n    const {pageSize} = applyDefaults(opts, {\n      pageSize: undefined\n    })\n    return PageStream.elements(client, instanceSet, {\n      pageSize,\n      mapLambda: query.lambda(query.get)\n    }).map(instance => this.getFromResource(client, instance))\n  }\n\n  /**\n   * Calls {@link Index#match} and then works just like {@link pageStream}.\n   *\n   * @param {Index} index Index whose instances are instances of this class.\n   * @param matchedValues Matched value or array of matched values, passed into {@link Index.match}.\n   * @param {number} opts.pageSize Size of each page.\n   * @return {PageStream<this>} Stream whose elements are instances of this class.\n   */\n  static streamIndex(index, matchedValues, opts={}) {\n    const {pageSize} = applyDefaults(opts, {\n      pageSize: undefined\n    })\n    const client = index.client\n    if (!(matchedValues instanceof Array))\n      matchedValues = [matchedValues]\n    const matchSet = index.match(...matchedValues)\n    return PageStream.elements(client, matchSet, {\n      pageSize,\n      mapLambda: indexRefGetter(index)\n    }).map(instance => this.getFromResource(client, instance))\n  }\n\n  /**\n   * Returns the first instance matched by the index.\n   * @param {Index} index\n   * @param matchedValues Same as for {@link Index.match}.\n   * @return {Promise<this>} Instance of this class.\n   */\n  static async getFromIndex(index, ...matchedValues) {\n    return this.getFromResource(index.client, await index.getSingle(...matchedValues))\n  }\n\n  /** @ignore */\n  toString() {\n    const fields = Object.keys(this.constructor.fields).map(key =>\n      `${key}: ${this[key]}`).join(', ')\n    return `${this.constructor.name}(${fields})`\n  }\n}\n\n/** Lambda expression for getting an instance Ref out of a match result. */\nconst indexRefGetter = index =>\n  index.values ?\n    query.lambda(arr => query.get(query.select(index.values.length, arr))) :\n    query.lambda(query.get)\n"
   },
   {
     "__docId__": 113,
@@ -4398,7 +4398,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function let_expr(vars, in_expr) {\n  return {let: vars, in: in_expr}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_form). */\nexport function variable(varName) {\n  return {var: varName}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function if_expr(condition, true_expr, false_expr) {\n  return {if: condition, then: true_expr, else: false_expr}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_form). */\nexport function do_expr(...expressions) {\n  return varargsQuery('do', expressions)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function object(object) {\n  return {object}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function quote(quote) {\n  return {quote}\n}\n\nlet lambdaAutoVarName = 'a'\n\n/**\n * See the [docs](https://faunadb.com/documentation/queries#basic_forms).\n * This form generates the names of lambda parameters for you, and is called like:\n *\n *     query.lambda(a => query.add(a, a))\n *     // Produces: {lambda: 'a', expr: {add: [{var: 'a'}, {var: 'a'}]}}\n *\n * You can also use {@link lambda_expr} directly.\n *\n * @param {function} lambda_body Takes a variable and uses it to construct an expression.\n */\nexport function lambda(lambda_body) {\n  const varName = lambdaAutoVarName\n  // Move var name for inner closures from 'a' to 'b', or 'b' to 'c', etc.\n  lambdaAutoVarName = String.fromCharCode(lambdaAutoVarName.charCodeAt(0) + 1)\n\n  // Make sure lambdaVarName returns to its former value even if there are errors.\n  try {\n    return lambda_expr(varName, lambda_body(variable(varName)))\n  } finally {\n    lambdaAutoVarName = varName\n  }\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function lambda_expr(var_name, expr) {\n  return {lambda: var_name, expr}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#collection_functions). */\nexport function map(lambda_expr, collection) {\n  return {map: lambda_expr, collection}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#collection_functions). */\nexport function foreach(lambda_expr, collection) {\n  return {foreach: lambda_expr, collection}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#read_functions). */\nexport function get(ref, ts=null) {\n  return params({get: ref}, {ts})\n}\n\n/**\n * See the [docs](https://faunadb.com/documentation/queries#read_functions).\n * You may want to convert the result of this to a {@link Page}.\n */\nexport function paginate(set, opts={}) {\n  return Object.assign({paginate: set}, opts)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#read_functions). */\nexport function exists(ref, ts=null) {\n  return params({exists: ref}, {ts})\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#read_functions). */\nexport function count(set, events=null) {\n  return params({count: set}, {events})\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function create(class_ref, params) {\n  return {create: class_ref, params}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function update(ref, params) {\n  return {update: ref, params}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function replace(ref, params) {\n  return {replace: ref, params}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function delete_expr(ref) {\n  return {delete: ref}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function match(match, index) {\n  return {match, index}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function union(...sets) {\n  return varargsQuery('union', sets)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function intersection(...sets) {\n  return varargsQuery('intersection', sets)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function difference(...sets) {\n  return varargsQuery('difference', sets)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function join(source, target) {\n  return {join: source, with: target}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function equals(...values) {\n  return varargsQuery('equals', values)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function concat(...strings) {\n  return varargsQuery('concat', strings)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function contains(path, value) {\n  return {contains: path, in: value}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function select(path, data) {\n  return {select: path, from: data}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function selectWithDefault(path, data, _default) {\n  return {select: path, from: data, default: _default}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function add(...numbers) {\n  return varargsQuery('add', numbers)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function multiply(...numbers) {\n  return varargsQuery('multiply', numbers)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function subtract(...numbers) {\n  return varargsQuery('subtract', numbers)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function divide(...numbers) {\n  return varargsQuery('divide', numbers)\n}\n\nconst\n  params = (mainParams, optionalParams) => {\n    for (const key in optionalParams) {\n      const val = optionalParams[key]\n      if (val !== null)\n        mainParams[key] = val\n    }\n    return mainParams\n  },\n\n  varargsQuery = (name, values) =>\n    ({[name]: values.length === 1 ? values[0] : values})\n"
+    "content": "/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function let_expr(vars, in_expr) {\n  return {let: vars, in: in_expr}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_form). */\nexport function variable(varName) {\n  return {var: varName}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function if_expr(condition, true_expr, false_expr) {\n  return {if: condition, then: true_expr, else: false_expr}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_form). */\nexport function do_expr(...expressions) {\n  return varargsQuery('do', expressions)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function object(object) {\n  return {object}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function quote(quote) {\n  return {quote}\n}\n\nlet lambdaAutoVarNumber = 0\n\n/**\n * See the [docs](https://faunadb.com/documentation/queries#basic_forms).\n * This form generates the names of lambda parameters for you, and is called like:\n *\n *     query.lambda(a => query.add(a, a))\n *     // Produces: {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}}\n *\n * You can also use {@link lambda_expr} directly.\n *\n * @param {function} lambda_body Takes a variable and uses it to construct an expression.\n */\nexport function lambda(lambda_body) {\n  const varName = `auto${lambdaAutoVarNumber}`\n  lambdaAutoVarNumber += 1\n\n  // Make sure lambdaVarName returns to its former value even if there are errors.\n  try {\n    return lambda_expr(varName, lambda_body(variable(varName)))\n  } finally {\n    lambdaAutoVarNumber -= 1\n  }\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#basic_forms). */\nexport function lambda_expr(var_name, expr) {\n  return {lambda: var_name, expr}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#collection_functions). */\nexport function map(lambda_expr, collection) {\n  return {map: lambda_expr, collection}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#collection_functions). */\nexport function foreach(lambda_expr, collection) {\n  return {foreach: lambda_expr, collection}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#read_functions). */\nexport function get(ref, ts=null) {\n  return params({get: ref}, {ts})\n}\n\n/**\n * See the [docs](https://faunadb.com/documentation/queries#read_functions).\n * You may want to convert the result of this to a {@link Page}.\n */\nexport function paginate(set, opts={}) {\n  return Object.assign({paginate: set}, opts)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#read_functions). */\nexport function exists(ref, ts=null) {\n  return params({exists: ref}, {ts})\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#read_functions). */\nexport function count(set, events=null) {\n  return params({count: set}, {events})\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function create(class_ref, params) {\n  return {create: class_ref, params}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function update(ref, params) {\n  return {update: ref, params}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function replace(ref, params) {\n  return {replace: ref, params}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#write_functions). */\nexport function delete_expr(ref) {\n  return {delete: ref}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function match(match, index) {\n  return {match, index}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function union(...sets) {\n  return varargsQuery('union', sets)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function intersection(...sets) {\n  return varargsQuery('intersection', sets)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function difference(...sets) {\n  return varargsQuery('difference', sets)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#sets). */\nexport function join(source, target) {\n  return {join: source, with: target}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function equals(...values) {\n  return varargsQuery('equals', values)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function concat(...strings) {\n  return varargsQuery('concat', strings)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function contains(path, value) {\n  return {contains: path, in: value}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function select(path, data) {\n  return {select: path, from: data}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function selectWithDefault(path, data, _default) {\n  return {select: path, from: data, default: _default}\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function add(...numbers) {\n  return varargsQuery('add', numbers)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function multiply(...numbers) {\n  return varargsQuery('multiply', numbers)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function subtract(...numbers) {\n  return varargsQuery('subtract', numbers)\n}\n\n/** See the [docs](https://faunadb.com/documentation/queries#misc_functions). */\nexport function divide(...numbers) {\n  return varargsQuery('divide', numbers)\n}\n\nconst\n  params = (mainParams, optionalParams) => {\n    for (const key in optionalParams) {\n      const val = optionalParams[key]\n      if (val !== null)\n        mainParams[key] = val\n    }\n    return mainParams\n  },\n\n  varargsQuery = (name, values) =>\n    ({[name]: values.length === 1 ? values[0] : values})\n"
   },
   {
     "__docId__": 183,
@@ -4598,9 +4598,9 @@
     "kind": "variable",
     "static": true,
     "variation": null,
-    "name": "lambdaAutoVarName",
+    "name": "lambdaAutoVarNumber",
     "memberof": "src/query.js",
-    "longname": "src/query.js~lambdaAutoVarName",
+    "longname": "src/query.js~lambdaAutoVarNumber",
     "access": null,
     "export": false,
     "importPath": "faunadb/src/query.js",
@@ -4610,7 +4610,7 @@
     "undocument": true,
     "type": {
       "types": [
-        "string"
+        "number"
       ]
     }
   },
@@ -4626,7 +4626,7 @@
     "export": true,
     "importPath": "faunadb/src/query.js",
     "importStyle": "{lambda}",
-    "description": "See the [docs](https://faunadb.com/documentation/queries#basic_forms).\nThis form generates the names of lambda parameters for you, and is called like:\n\n    query.lambda(a => query.add(a, a))\n    // Produces: {lambda: 'a', expr: {add: [{var: 'a'}, {var: 'a'}]}}\n\nYou can also use {@link lambda_expr} directly.",
+    "description": "See the [docs](https://faunadb.com/documentation/queries#basic_forms).\nThis form generates the names of lambda parameters for you, and is called like:\n\n    query.lambda(a => query.add(a, a))\n    // Produces: {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}}\n\nYou can also use {@link lambda_expr} directly.",
     "lineNumber": 44,
     "params": [
       {
@@ -4660,7 +4660,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{lambda_expr}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#basic_forms).",
-    "lineNumber": 58,
+    "lineNumber": 57,
     "params": [
       {
         "name": "var_name",
@@ -4695,7 +4695,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{map}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#collection_functions).",
-    "lineNumber": 63,
+    "lineNumber": 62,
     "params": [
       {
         "name": "lambda_expr",
@@ -4730,7 +4730,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{foreach}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#collection_functions).",
-    "lineNumber": 68,
+    "lineNumber": 67,
     "params": [
       {
         "name": "lambda_expr",
@@ -4765,7 +4765,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{get}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#read_functions).",
-    "lineNumber": 73,
+    "lineNumber": 72,
     "params": [
       {
         "name": "ref",
@@ -4803,7 +4803,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{paginate}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#read_functions).\nYou may want to convert the result of this to a {@link Page}.",
-    "lineNumber": 81,
+    "lineNumber": 80,
     "params": [
       {
         "name": "set",
@@ -4841,7 +4841,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{exists}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#read_functions).",
-    "lineNumber": 86,
+    "lineNumber": 85,
     "params": [
       {
         "name": "ref",
@@ -4879,7 +4879,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{count}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#read_functions).",
-    "lineNumber": 91,
+    "lineNumber": 90,
     "params": [
       {
         "name": "set",
@@ -4917,7 +4917,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{create}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#write_functions).",
-    "lineNumber": 96,
+    "lineNumber": 95,
     "params": [
       {
         "name": "class_ref",
@@ -4952,7 +4952,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{update}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#write_functions).",
-    "lineNumber": 101,
+    "lineNumber": 100,
     "params": [
       {
         "name": "ref",
@@ -4987,7 +4987,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{replace}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#write_functions).",
-    "lineNumber": 106,
+    "lineNumber": 105,
     "params": [
       {
         "name": "ref",
@@ -5022,7 +5022,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{delete_expr}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#write_functions).",
-    "lineNumber": 111,
+    "lineNumber": 110,
     "params": [
       {
         "name": "ref",
@@ -5051,7 +5051,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{match}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#sets).",
-    "lineNumber": 116,
+    "lineNumber": 115,
     "params": [
       {
         "name": "match",
@@ -5086,7 +5086,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{union}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#sets).",
-    "lineNumber": 121,
+    "lineNumber": 120,
     "params": [
       {
         "name": "sets",
@@ -5116,7 +5116,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{intersection}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#sets).",
-    "lineNumber": 126,
+    "lineNumber": 125,
     "params": [
       {
         "name": "sets",
@@ -5146,7 +5146,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{difference}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#sets).",
-    "lineNumber": 131,
+    "lineNumber": 130,
     "params": [
       {
         "name": "sets",
@@ -5176,7 +5176,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{join}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#sets).",
-    "lineNumber": 136,
+    "lineNumber": 135,
     "params": [
       {
         "name": "source",
@@ -5211,7 +5211,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{equals}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 141,
+    "lineNumber": 140,
     "params": [
       {
         "name": "values",
@@ -5241,7 +5241,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{concat}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 146,
+    "lineNumber": 145,
     "params": [
       {
         "name": "strings",
@@ -5271,7 +5271,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{contains}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 151,
+    "lineNumber": 150,
     "params": [
       {
         "name": "path",
@@ -5306,7 +5306,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{select}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 156,
+    "lineNumber": 155,
     "params": [
       {
         "name": "path",
@@ -5341,7 +5341,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{selectWithDefault}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 161,
+    "lineNumber": 160,
     "params": [
       {
         "name": "path",
@@ -5382,7 +5382,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{add}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 166,
+    "lineNumber": 165,
     "params": [
       {
         "name": "numbers",
@@ -5412,7 +5412,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{multiply}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 171,
+    "lineNumber": 170,
     "params": [
       {
         "name": "numbers",
@@ -5442,7 +5442,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{subtract}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 176,
+    "lineNumber": 175,
     "params": [
       {
         "name": "numbers",
@@ -5472,7 +5472,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": "{divide}",
     "description": "See the [docs](https://faunadb.com/documentation/queries#misc_functions).",
-    "lineNumber": 181,
+    "lineNumber": 180,
     "params": [
       {
         "name": "numbers",
@@ -5502,7 +5502,7 @@
     "importPath": "faunadb/src/query.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 185,
+    "lineNumber": 184,
     "undocument": true,
     "type": {
       "types": [
@@ -6945,7 +6945,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import {assert} from 'chai'\nimport {BadRequest, NotFound} from '../src/errors'\nimport {FaunaSet} from '../src/objects'\nimport * as query from '../src/query'\nimport {assertRejected, client} from './util'\n\nlet class_ref, nIndexRef, mIndexRef, refN1, refM1, refN1M1\n\ndescribe('query', () => {\n  before(async function() {\n    class_ref = (await client.post('classes', {name: 'widgets'})).ref\n\n    nIndexRef = (await client.post('indexes', {\n      name: 'widgets_by_n',\n      source: class_ref,\n      path: 'data.n',\n      active: true\n    })).ref\n\n    mIndexRef = (await client.post('indexes', {\n      name: 'widgets_by_m',\n      source: class_ref,\n      path: 'data.m',\n      active: true\n    })).ref\n\n    refN1 = (await create({n: 1})).ref\n    refM1 = (await create({m: 1})).ref\n    refN1M1 = (await create({n: 1, m: 1})).ref\n  })\n\n  it('let/var', async function() {\n    await assertQuery(query.let_expr({x: 1}, query.variable('x')), 1)\n  })\n\n  it('if', async function() {\n    await assertQuery(query.if_expr(true, 't', 'f'), 't')\n    await assertQuery(query.if_expr(false, 't', 'f'), 'f')\n  })\n\n  it('do', async function() {\n    const ref = (await create()).ref\n    await assertQuery(query.do_expr(query.delete_expr(ref), 1), 1)\n    await assertQuery(query.exists(ref), false)\n  })\n\n  it('object', async function() {\n    const obj = query.object({x: query.let_expr({x: 1}, query.variable('x'))})\n    await assertQuery(obj, {x: 1})\n  })\n\n  it('quote', async function() {\n    const quoted = query.let_expr({x: 1}, query.variable('x'))\n    await assertQuery(query.quote(quoted), quoted)\n  })\n\n  it('lambda', () => {\n    assert.deepEqual(\n      query.lambda(a => query.add(a, a)),\n      {lambda: 'a', expr: {add: [{var: 'a'}, {var: 'a'}]}})\n\n    assert.deepEqual(\n      query.lambda(a => query.lambda(b => query.lambda(c => [a, b, c]))),\n      {\n        lambda: 'a',\n        expr: {lambda: 'b', expr: {lambda: 'c', expr: [{var: 'a'}, {var: 'b'}, {var: 'c'}]}}\n      })\n\n    // Error in function should not affect future queries.\n    try { query.lambda(() => { throw new Error() }) } catch (err) { }\n\n    assert.deepEqual(query.lambda(a => a), {lambda: 'a', expr: {var: 'a'}})\n  })\n\n  it('map', async function() {\n    const double = query.lambda(x => query.multiply([2, x]))\n    await assertQuery(query.map(double, [1, 2, 3]), [2, 4, 6])\n\n    const getN = query.lambda(x => query.select(['data', 'n'], query.get(x)))\n    const page = query.paginate(nSet(1))\n    const ns = query.map(getN, page)\n    assert.deepEqual((await client.query(ns)).data, [1, 1])\n  })\n\n  it('foreach', async function() {\n    const refs = [(await create()).ref, (await create()).ref]\n    await client.query(\n      query.foreach(query.lambda(query.delete_expr), refs))\n    for (const ref of refs)\n      await assertQuery(query.exists(ref), false)\n  })\n\n  it('get', async function() {\n    const instance = await create()\n    await assertQuery(query.get(instance.ref), instance)\n  })\n\n  it('paginate', async function() {\n    const testSet = nSet(1)\n    await assertQuery(query.paginate(testSet), {data: [refN1, refN1M1]})\n    await assertQuery(query.paginate(testSet, {size: 1}), {data: [refN1], after: refN1M1})\n    await assertQuery(query.paginate(testSet, {sources: true}), {\n      data: [\n        {sources: [new FaunaSet(testSet)], value: refN1},\n        {sources: [new FaunaSet(testSet)], value: refN1M1}\n      ]\n    })\n  })\n\n  it('exists', async function() {\n    const ref = (await create()).ref\n    await assertQuery(query.exists(ref), true)\n    await client.query(query.delete_expr(ref))\n    await assertQuery(query.exists(ref), false)\n  })\n\n  it('count', async function() {\n    await create({n: 123})\n    await create({n: 123})\n    const instances = nSet(123)\n    // `count` is currently only approximate. Should be 2.\n    assert.typeOf(await client.query(query.count(instances)), 'number')\n  })\n\n  it('create', async function() {\n    const instance = await create()\n    assert('ref' in instance)\n    assert('ts' in instance)\n    assert.deepEqual(instance.class, class_ref)\n  })\n\n  it('update', async function() {\n    const ref = (await create()).ref\n    const got = await client.query(query.update(ref, query.quote({data: {m: 9}})))\n    assert.deepEqual(got.data, {n: 0, m: 9})\n  })\n\n  it('replace', async function() {\n    const ref = (await create()).ref\n    const got = await client.query(query.replace(ref, query.quote({data: {m: 9}})))\n    assert.deepEqual(got.data, {m: 9})\n  })\n\n  it('delete', async function() {\n    const ref = (await create()).ref\n    await client.query(query.delete_expr(ref))\n    await assertQuery(query.exists(ref), false)\n  })\n\n  it('match', async function() {\n    await assertSet(nSet(1), [refN1, refN1M1])\n  })\n\n  it('union', async function() {\n    await assertSet(query.union(nSet(1), mSet(1)), [refN1, refM1, refN1M1])\n  })\n\n  it('intersection', async function() {\n    await assertSet(query.intersection(nSet(1), mSet(1)), [refN1M1])\n  })\n\n  it('difference', async function() {\n    await assertSet(query.difference(nSet(1), mSet(1)), [refN1]) // but not refN1M1\n  })\n\n  it('join', async function() {\n    const referenced = [\n      (await create({n: 12})).ref,\n      (await create({n: 12})).ref\n    ]\n    const referencers = [\n      (await create({m: referenced[0]})).ref,\n      (await create({m: referenced[1]})).ref\n    ]\n\n    const source = nSet(12)\n    await assertSet(source, referenced)\n\n    // For each obj with n=12, get the set of elements whose data.m refers to it.\n    const joined = query.join(\n      source,\n      query.lambda(x => query.match(x, mIndexRef)))\n    await assertSet(joined, referencers)\n  })\n\n  it('equals', async function() {\n    await assertQuery(query.equals(1, 1, 1), true)\n    await assertQuery(query.equals(1, 1, 2), false)\n    await assertQuery(query.equals(1), true)\n    await assertBadQuery(query.equals())\n  })\n\n  it('concat', async function() {\n    await assertQuery(query.concat('a', 'b', 'c'), 'abc')\n    await assertQuery(query.concat(), '')\n  })\n\n  it('contains', async function() {\n    const obj = query.quote({a: {b: 1}})\n    await assertQuery(query.contains(['a', 'b'], obj), true)\n    await assertQuery(query.contains('a', obj), true)\n    await assertQuery(query.contains(['a', 'c'], obj), false)\n  })\n\n  it('select', async function() {\n    const obj = query.quote({a: {b: 1}})\n    await assertQuery(query.select('a', obj), {b: 1})\n    await assertQuery(query.select(['a', 'b'], obj), 1)\n    await assertQuery(query.selectWithDefault('c', obj, null), null)\n    await assertBadQuery(query.select('c', obj), NotFound)\n  })\n\n  it('select for array', async function() {\n    const arr = [1, 2, 3]\n    await assertQuery(query.select(2, arr), 3)\n    await assertBadQuery(query.select(3, arr), NotFound)\n  })\n\n  it('add', async function() {\n    await assertQuery(query.add(2, 3, 5), 10)\n    await assertBadQuery(query.add())\n  })\n\n  it('multiply', async function() {\n    await assertQuery(query.multiply(2, 3, 5), 30)\n    await assertBadQuery(query.multiply())\n  })\n\n  it('subtract', async function() {\n    await assertQuery(query.subtract(2, 3, 5), -6)\n    await assertQuery(query.subtract(2), 2)\n    await assertBadQuery(query.subtract())\n  })\n\n  it('divide', async function() {\n    // TODO: can't make this query because 2.0 === 2\n    // await assertQuery(query.divide(2, 3, 5), 2/15)\n    await assertQuery(query.divide(2), 2)\n    await assertBadQuery(query.divide(1, 0))\n    await assertBadQuery(query.divide())\n  })\n\n  it('varargs', async function() {\n    // Works for lists too\n    await assertQuery(query.add([2, 3, 5]), 10)\n    // Works for a variable equal to a list\n    await assertQuery(query.let_expr({x: [2, 3, 5]}, query.add(query.variable('x'))), 10)\n  })\n})\n\nconst\n  create = (data={}) => {\n    if (data.n === undefined)\n      data.n = 0\n    return client.query(query.create(class_ref, query.quote({data})))\n  },\n  nSet = n =>\n    query.match(n, nIndexRef),\n  mSet = m =>\n    query.match(m, mIndexRef)\n\nasync function assertQuery(query, expected) {\n  assert.deepEqual(await client.query(query), expected)\n}\nasync function assertBadQuery(query, errorType=BadRequest) {\n  assertRejected(client.query(query), errorType)\n}\nasync function assertSet(set, expected) {\n  assert.deepEqual(await getSetContents(set), expected)\n}\nasync function getSetContents(set) {\n  return (await client.query(query.paginate(set, {size: 1000}))).data\n}\n"
+    "content": "import {assert} from 'chai'\nimport {BadRequest, NotFound} from '../src/errors'\nimport {FaunaSet} from '../src/objects'\nimport * as query from '../src/query'\nimport {assertRejected, client} from './util'\n\nlet class_ref, nIndexRef, mIndexRef, refN1, refM1, refN1M1\n\ndescribe('query', () => {\n  before(async function() {\n    class_ref = (await client.post('classes', {name: 'widgets'})).ref\n\n    nIndexRef = (await client.post('indexes', {\n      name: 'widgets_by_n',\n      source: class_ref,\n      path: 'data.n',\n      active: true\n    })).ref\n\n    mIndexRef = (await client.post('indexes', {\n      name: 'widgets_by_m',\n      source: class_ref,\n      path: 'data.m',\n      active: true\n    })).ref\n\n    refN1 = (await create({n: 1})).ref\n    refM1 = (await create({m: 1})).ref\n    refN1M1 = (await create({n: 1, m: 1})).ref\n  })\n\n  it('let/var', async function() {\n    await assertQuery(query.let_expr({x: 1}, query.variable('x')), 1)\n  })\n\n  it('if', async function() {\n    await assertQuery(query.if_expr(true, 't', 'f'), 't')\n    await assertQuery(query.if_expr(false, 't', 'f'), 'f')\n  })\n\n  it('do', async function() {\n    const ref = (await create()).ref\n    await assertQuery(query.do_expr(query.delete_expr(ref), 1), 1)\n    await assertQuery(query.exists(ref), false)\n  })\n\n  it('object', async function() {\n    const obj = query.object({x: query.let_expr({x: 1}, query.variable('x'))})\n    await assertQuery(obj, {x: 1})\n  })\n\n  it('quote', async function() {\n    const quoted = query.let_expr({x: 1}, query.variable('x'))\n    await assertQuery(query.quote(quoted), quoted)\n  })\n\n  it('lambda', () => {\n    assert.deepEqual(\n      query.lambda(a => query.add(a, a)),\n      {lambda: 'auto0', expr: {add: [{var: 'auto0'}, {var: 'auto0'}]}})\n\n    assert.deepEqual(\n      query.lambda(a => query.lambda(b => query.lambda(c => [a, b, c]))),\n      {\n        lambda: 'auto0',\n        expr: {\n          lambda: 'auto1',\n          expr: {\n            lambda: 'auto2',\n            expr: [{var: 'auto0'}, {var: 'auto1'}, {var: 'auto2'}]}\n          }\n      })\n\n    // Error in function should not affect future queries.\n    try { query.lambda(() => { throw new Error() }) } catch (err) { }\n\n    assert.deepEqual(query.lambda(a => a), {lambda: 'auto0', expr: {var: 'auto0'}})\n  })\n\n  it('map', async function() {\n    const double = query.lambda(x => query.multiply([2, x]))\n    await assertQuery(query.map(double, [1, 2, 3]), [2, 4, 6])\n\n    const getN = query.lambda(x => query.select(['data', 'n'], query.get(x)))\n    const page = query.paginate(nSet(1))\n    const ns = query.map(getN, page)\n    assert.deepEqual((await client.query(ns)).data, [1, 1])\n  })\n\n  it('foreach', async function() {\n    const refs = [(await create()).ref, (await create()).ref]\n    await client.query(\n      query.foreach(query.lambda(query.delete_expr), refs))\n    for (const ref of refs)\n      await assertQuery(query.exists(ref), false)\n  })\n\n  it('get', async function() {\n    const instance = await create()\n    await assertQuery(query.get(instance.ref), instance)\n  })\n\n  it('paginate', async function() {\n    const testSet = nSet(1)\n    await assertQuery(query.paginate(testSet), {data: [refN1, refN1M1]})\n    await assertQuery(query.paginate(testSet, {size: 1}), {data: [refN1], after: refN1M1})\n    await assertQuery(query.paginate(testSet, {sources: true}), {\n      data: [\n        {sources: [new FaunaSet(testSet)], value: refN1},\n        {sources: [new FaunaSet(testSet)], value: refN1M1}\n      ]\n    })\n  })\n\n  it('exists', async function() {\n    const ref = (await create()).ref\n    await assertQuery(query.exists(ref), true)\n    await client.query(query.delete_expr(ref))\n    await assertQuery(query.exists(ref), false)\n  })\n\n  it('count', async function() {\n    await create({n: 123})\n    await create({n: 123})\n    const instances = nSet(123)\n    // `count` is currently only approximate. Should be 2.\n    assert.typeOf(await client.query(query.count(instances)), 'number')\n  })\n\n  it('create', async function() {\n    const instance = await create()\n    assert('ref' in instance)\n    assert('ts' in instance)\n    assert.deepEqual(instance.class, class_ref)\n  })\n\n  it('update', async function() {\n    const ref = (await create()).ref\n    const got = await client.query(query.update(ref, query.quote({data: {m: 9}})))\n    assert.deepEqual(got.data, {n: 0, m: 9})\n  })\n\n  it('replace', async function() {\n    const ref = (await create()).ref\n    const got = await client.query(query.replace(ref, query.quote({data: {m: 9}})))\n    assert.deepEqual(got.data, {m: 9})\n  })\n\n  it('delete', async function() {\n    const ref = (await create()).ref\n    await client.query(query.delete_expr(ref))\n    await assertQuery(query.exists(ref), false)\n  })\n\n  it('match', async function() {\n    await assertSet(nSet(1), [refN1, refN1M1])\n  })\n\n  it('union', async function() {\n    await assertSet(query.union(nSet(1), mSet(1)), [refN1, refM1, refN1M1])\n  })\n\n  it('intersection', async function() {\n    await assertSet(query.intersection(nSet(1), mSet(1)), [refN1M1])\n  })\n\n  it('difference', async function() {\n    await assertSet(query.difference(nSet(1), mSet(1)), [refN1]) // but not refN1M1\n  })\n\n  it('join', async function() {\n    const referenced = [\n      (await create({n: 12})).ref,\n      (await create({n: 12})).ref\n    ]\n    const referencers = [\n      (await create({m: referenced[0]})).ref,\n      (await create({m: referenced[1]})).ref\n    ]\n\n    const source = nSet(12)\n    await assertSet(source, referenced)\n\n    // For each obj with n=12, get the set of elements whose data.m refers to it.\n    const joined = query.join(\n      source,\n      query.lambda(x => query.match(x, mIndexRef)))\n    await assertSet(joined, referencers)\n  })\n\n  it('equals', async function() {\n    await assertQuery(query.equals(1, 1, 1), true)\n    await assertQuery(query.equals(1, 1, 2), false)\n    await assertQuery(query.equals(1), true)\n    await assertBadQuery(query.equals())\n  })\n\n  it('concat', async function() {\n    await assertQuery(query.concat('a', 'b', 'c'), 'abc')\n    await assertQuery(query.concat(), '')\n  })\n\n  it('contains', async function() {\n    const obj = query.quote({a: {b: 1}})\n    await assertQuery(query.contains(['a', 'b'], obj), true)\n    await assertQuery(query.contains('a', obj), true)\n    await assertQuery(query.contains(['a', 'c'], obj), false)\n  })\n\n  it('select', async function() {\n    const obj = query.quote({a: {b: 1}})\n    await assertQuery(query.select('a', obj), {b: 1})\n    await assertQuery(query.select(['a', 'b'], obj), 1)\n    await assertQuery(query.selectWithDefault('c', obj, null), null)\n    await assertBadQuery(query.select('c', obj), NotFound)\n  })\n\n  it('select for array', async function() {\n    const arr = [1, 2, 3]\n    await assertQuery(query.select(2, arr), 3)\n    await assertBadQuery(query.select(3, arr), NotFound)\n  })\n\n  it('add', async function() {\n    await assertQuery(query.add(2, 3, 5), 10)\n    await assertBadQuery(query.add())\n  })\n\n  it('multiply', async function() {\n    await assertQuery(query.multiply(2, 3, 5), 30)\n    await assertBadQuery(query.multiply())\n  })\n\n  it('subtract', async function() {\n    await assertQuery(query.subtract(2, 3, 5), -6)\n    await assertQuery(query.subtract(2), 2)\n    await assertBadQuery(query.subtract())\n  })\n\n  it('divide', async function() {\n    // TODO: can't make this query because 2.0 === 2\n    // await assertQuery(query.divide(2, 3, 5), 2/15)\n    await assertQuery(query.divide(2), 2)\n    await assertBadQuery(query.divide(1, 0))\n    await assertBadQuery(query.divide())\n  })\n\n  it('varargs', async function() {\n    // Works for lists too\n    await assertQuery(query.add([2, 3, 5]), 10)\n    // Works for a variable equal to a list\n    await assertQuery(query.let_expr({x: [2, 3, 5]}, query.add(query.variable('x'))), 10)\n  })\n})\n\nconst\n  create = (data={}) => {\n    if (data.n === undefined)\n      data.n = 0\n    return client.query(query.create(class_ref, query.quote({data})))\n  },\n  nSet = n =>\n    query.match(n, nIndexRef),\n  mSet = m =>\n    query.match(m, mIndexRef)\n\nasync function assertQuery(query, expected) {\n  assert.deepEqual(await client.query(query), expected)\n}\nasync function assertBadQuery(query, errorType=BadRequest) {\n  assertRejected(client.query(query), errorType)\n}\nasync function assertSet(set, expected) {\n  assert.deepEqual(await getSetContents(set), expected)\n}\nasync function getSetContents(set) {\n  return (await client.query(query.paginate(set, {size: 1000}))).data\n}\n"
   },
   {
     "__docId__": 326,
@@ -7057,7 +7057,7 @@
     "longname": "test/query_test.js~describe46.it53",
     "access": null,
     "description": "map",
-    "lineNumber": 75
+    "lineNumber": 80
   },
   {
     "__docId__": 334,
@@ -7071,7 +7071,7 @@
     "longname": "test/query_test.js~describe46.it54",
     "access": null,
     "description": "foreach",
-    "lineNumber": 85
+    "lineNumber": 90
   },
   {
     "__docId__": 335,
@@ -7085,7 +7085,7 @@
     "longname": "test/query_test.js~describe46.it55",
     "access": null,
     "description": "get",
-    "lineNumber": 93
+    "lineNumber": 98
   },
   {
     "__docId__": 336,
@@ -7099,7 +7099,7 @@
     "longname": "test/query_test.js~describe46.it56",
     "access": null,
     "description": "paginate",
-    "lineNumber": 98
+    "lineNumber": 103
   },
   {
     "__docId__": 337,
@@ -7113,7 +7113,7 @@
     "longname": "test/query_test.js~describe46.it57",
     "access": null,
     "description": "exists",
-    "lineNumber": 110
+    "lineNumber": 115
   },
   {
     "__docId__": 338,
@@ -7127,7 +7127,7 @@
     "longname": "test/query_test.js~describe46.it58",
     "access": null,
     "description": "count",
-    "lineNumber": 117
+    "lineNumber": 122
   },
   {
     "__docId__": 339,
@@ -7141,7 +7141,7 @@
     "longname": "test/query_test.js~describe46.it59",
     "access": null,
     "description": "create",
-    "lineNumber": 125
+    "lineNumber": 130
   },
   {
     "__docId__": 340,
@@ -7155,7 +7155,7 @@
     "longname": "test/query_test.js~describe46.it60",
     "access": null,
     "description": "update",
-    "lineNumber": 132
+    "lineNumber": 137
   },
   {
     "__docId__": 341,
@@ -7169,7 +7169,7 @@
     "longname": "test/query_test.js~describe46.it61",
     "access": null,
     "description": "replace",
-    "lineNumber": 138
+    "lineNumber": 143
   },
   {
     "__docId__": 342,
@@ -7183,7 +7183,7 @@
     "longname": "test/query_test.js~describe46.it62",
     "access": null,
     "description": "delete",
-    "lineNumber": 144
+    "lineNumber": 149
   },
   {
     "__docId__": 343,
@@ -7197,7 +7197,7 @@
     "longname": "test/query_test.js~describe46.it63",
     "access": null,
     "description": "match",
-    "lineNumber": 150
+    "lineNumber": 155
   },
   {
     "__docId__": 344,
@@ -7211,7 +7211,7 @@
     "longname": "test/query_test.js~describe46.it64",
     "access": null,
     "description": "union",
-    "lineNumber": 154
+    "lineNumber": 159
   },
   {
     "__docId__": 345,
@@ -7225,7 +7225,7 @@
     "longname": "test/query_test.js~describe46.it65",
     "access": null,
     "description": "intersection",
-    "lineNumber": 158
+    "lineNumber": 163
   },
   {
     "__docId__": 346,
@@ -7239,7 +7239,7 @@
     "longname": "test/query_test.js~describe46.it66",
     "access": null,
     "description": "difference",
-    "lineNumber": 162
+    "lineNumber": 167
   },
   {
     "__docId__": 347,
@@ -7253,7 +7253,7 @@
     "longname": "test/query_test.js~describe46.it67",
     "access": null,
     "description": "join",
-    "lineNumber": 166
+    "lineNumber": 171
   },
   {
     "__docId__": 348,
@@ -7267,7 +7267,7 @@
     "longname": "test/query_test.js~describe46.it68",
     "access": null,
     "description": "equals",
-    "lineNumber": 186
+    "lineNumber": 191
   },
   {
     "__docId__": 349,
@@ -7281,7 +7281,7 @@
     "longname": "test/query_test.js~describe46.it69",
     "access": null,
     "description": "concat",
-    "lineNumber": 193
+    "lineNumber": 198
   },
   {
     "__docId__": 350,
@@ -7295,7 +7295,7 @@
     "longname": "test/query_test.js~describe46.it70",
     "access": null,
     "description": "contains",
-    "lineNumber": 198
+    "lineNumber": 203
   },
   {
     "__docId__": 351,
@@ -7309,7 +7309,7 @@
     "longname": "test/query_test.js~describe46.it71",
     "access": null,
     "description": "select",
-    "lineNumber": 205
+    "lineNumber": 210
   },
   {
     "__docId__": 352,
@@ -7323,7 +7323,7 @@
     "longname": "test/query_test.js~describe46.it72",
     "access": null,
     "description": "select for array",
-    "lineNumber": 213
+    "lineNumber": 218
   },
   {
     "__docId__": 353,
@@ -7337,7 +7337,7 @@
     "longname": "test/query_test.js~describe46.it73",
     "access": null,
     "description": "add",
-    "lineNumber": 219
+    "lineNumber": 224
   },
   {
     "__docId__": 354,
@@ -7351,7 +7351,7 @@
     "longname": "test/query_test.js~describe46.it74",
     "access": null,
     "description": "multiply",
-    "lineNumber": 224
+    "lineNumber": 229
   },
   {
     "__docId__": 355,
@@ -7365,7 +7365,7 @@
     "longname": "test/query_test.js~describe46.it75",
     "access": null,
     "description": "subtract",
-    "lineNumber": 229
+    "lineNumber": 234
   },
   {
     "__docId__": 356,
@@ -7379,7 +7379,7 @@
     "longname": "test/query_test.js~describe46.it76",
     "access": null,
     "description": "divide",
-    "lineNumber": 235
+    "lineNumber": 240
   },
   {
     "__docId__": 357,
@@ -7393,7 +7393,7 @@
     "longname": "test/query_test.js~describe46.it77",
     "access": null,
     "description": "varargs",
-    "lineNumber": 243
+    "lineNumber": 248
   },
   {
     "__docId__": 358,
@@ -7406,7 +7406,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import {assert} from 'chai'\nimport AsyncStream from '../src/AsyncStream'\nimport PageStream from '../src/PageStream'\nimport * as query from '../src/query'\nimport {client} from './util'\n\nconst countToFour = () =>\n  AsyncStream.fromIterable([0, 1, 2, 3, 4])\n\ndescribe('stream', () => {\n  it('stream', async function() {\n    assert.deepEqual(await countToFour().all(), [0, 1, 2, 3, 4])\n  })\n\n  it('map', async function() {\n    assert.deepEqual(await countToFour().map(n => n * 2).all(), [0, 2, 4, 6, 8])\n  })\n\n  it('filter', async function() {\n    assert.deepEqual(await countToFour().filter(n => n % 2 === 0).all(), [0, 2, 4])\n  })\n\n  it('takeWhile', async function() {\n    assert.deepEqual(await countToFour().takeWhile(n => n < 3).all(), [0, 1, 2])\n  })\n\n  it('flatten', async function() {\n    assert.deepEqual(\n      await AsyncStream.fromIterable([[0, 1], [], [2, 3, 4]]).flatten().all(),\n      [0, 1, 2, 3, 4])\n  })\n\n  it('flatMap', async function() {\n    assert.deepEqual(\n      await AsyncStream.fromIterable([0, 1, 2]).flatMap(n => [n, n]).all(),\n      [0, 0, 1, 1, 2, 2])\n  })\n\n  it('page stream', async function() {\n    const classRef = (await client.post('classes', {name: 'gadgets'})).ref\n    const indexRef = (await client.post('indexes', {\n      name: 'gadgets_by_n',\n      source: classRef,\n      path: 'data.n',\n      active: true\n    })).ref\n\n    async function create(n) {\n      const q = query.create(classRef, query.quote({data: {n}}))\n      return (await client.query(q)).ref\n    }\n\n    const a = await create(0)\n    await create(1)\n    const b = await create(0), c = await create(0), d = await create(0)\n\n    const gadgetsSet = query.match(0, indexRef)\n\n    const stream = new PageStream(client, gadgetsSet, {pageSize: 2})\n\n    assert.deepEqual(await stream.all(), [[a, b], [c, d]])\n\n    assert.deepEqual(\n      await PageStream.elements(client, gadgetsSet, {pageSize: 2}).all(),\n      [a, b, c, d])\n\n    // Test mapLambda\n    const mapStream = PageStream.elements(client, gadgetsSet, {\n      pageSize: 2,\n      mapLambda: query.lambda(x => query.select(['data', 'n'], x))\n    })\n    assert.deepEqual(await mapStream.all(), [0, 0, 0, 0])\n  })\n})"
+    "content": "import {assert} from 'chai'\nimport AsyncStream from '../src/AsyncStream'\nimport PageStream from '../src/PageStream'\nimport * as query from '../src/query'\nimport {client} from './util'\n\nconst countToFour = () =>\n  AsyncStream.fromIterable([0, 1, 2, 3, 4])\n\ndescribe('stream', () => {\n  it('stream', async function() {\n    assert.deepEqual(await countToFour().all(), [0, 1, 2, 3, 4])\n  })\n\n  it('map', async function() {\n    assert.deepEqual(await countToFour().map(n => n * 2).all(), [0, 2, 4, 6, 8])\n  })\n\n  it('filter', async function() {\n    assert.deepEqual(await countToFour().filter(n => n % 2 === 0).all(), [0, 2, 4])\n  })\n\n  it('takeWhile', async function() {\n    assert.deepEqual(await countToFour().takeWhile(n => n < 3).all(), [0, 1, 2])\n  })\n\n  it('flatten', async function() {\n    assert.deepEqual(\n      await AsyncStream.fromIterable([[0, 1], [], [2, 3, 4]]).flatten().all(),\n      [0, 1, 2, 3, 4])\n  })\n\n  it('flatMap', async function() {\n    assert.deepEqual(\n      await AsyncStream.fromIterable([0, 1, 2]).flatMap(n => [n, n]).all(),\n      [0, 0, 1, 1, 2, 2])\n  })\n\n  it('page stream', async function() {\n    const classRef = (await client.post('classes', {name: 'gadgets'})).ref\n    const indexRef = (await client.post('indexes', {\n      name: 'gadgets_by_n',\n      source: classRef,\n      path: 'data.n',\n      active: true\n    })).ref\n\n    async function create(n) {\n      const q = query.create(classRef, query.quote({data: {n}}))\n      return (await client.query(q)).ref\n    }\n\n    const a = await create(0)\n    await create(1)\n    const b = await create(0), c = await create(0), d = await create(0)\n\n    const gadgetsSet = query.match(0, indexRef)\n\n    const stream = new PageStream(client, gadgetsSet, {pageSize: 2})\n\n    assert.deepEqual(await stream.all(), [[a, b], [c, d]])\n\n    assert.deepEqual(\n      await PageStream.elements(client, gadgetsSet, {pageSize: 2}).all(),\n      [a, b, c, d])\n\n    // Test mapLambda\n    const mapStream = PageStream.elements(client, gadgetsSet, {\n      pageSize: 2,\n      mapLambda: query.lambda(x => query.select(['data', 'n'], query.get(x)))\n    })\n    assert.deepEqual(await mapStream.all(), [0, 0, 0, 0])\n  })\n})"
   },
   {
     "__docId__": 359,
