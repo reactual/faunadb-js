@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">src/client.js | FaunaDB API Document</title>
+  <title data-ice="title">src/Client.js | FaunaDB API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -33,8 +33,8 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/AsyncStream.js~AsyncStream.html">AsyncStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PageStream.js~PageStream.html">PageStream</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~BadRequest.html">BadRequest</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaError.html">FaunaError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaHTTPError.html">FaunaHTTPError</a></span></span></li>
@@ -96,7 +96,7 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><h1 data-ice="title">src/client.js</h1>
+<div class="content" data-ice="content"><h1 data-ice="title">src/Client.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import request from &apos;request&apos;
 import winston from &apos;winston&apos;
 import {BadRequest, FaunaHTTPError, InternalError, MethodNotAllowed, NotFound,
@@ -198,8 +198,8 @@ export default class Client {
    * Like {@link post}, but a `DELETE` request.
    * See the [docs](https://faunadb.com/documentation/rest).
    */
-  delete(path, data) {
-    return this._execute(&apos;DELETE&apos;, path, data)
+  delete(path) {
+    return this._execute(&apos;DELETE&apos;, path)
   }
 
   /**
@@ -218,7 +218,7 @@ export default class Client {
    * See the [docs](https://faunadb.com/documentation/rest#other).
    * @return {Promise&lt;string&gt;}
    */
-  ping(scope, timeout) {
+  ping(scope=undefined, timeout=undefined) {
     return this.get(&apos;ping&apos;, {scope, timeout})
   }
 
@@ -297,34 +297,34 @@ export default class Client {
   }
 }
 
-const
-  handleResponse = (response, response_object) =&gt; {
-    const code = response.statusCode
-    if (200 &lt;= code &amp;&amp; code &lt;= 299)
-      return response_object.resource
-    else
-      switch (code) {
-        case 400:
-          throw new BadRequest(response_object)
-        case 401:
-          throw new Unauthorized(response_object)
-        case 403:
-          throw new PermissionDenied(response_object)
-        case 404:
-          throw new NotFound(response_object)
-        case 405:
-          throw new MethodNotAllowed(response_object)
-        case 500:
-          throw new InternalError(response_object)
-        case 503:
-          throw new UnavailableError(response_object)
-        default:
-          throw new FaunaHTTPError(response_object)
-      }
-  },
+function handleResponse(response, response_object) {
+  const code = response.statusCode
+  if (200 &lt;= code &amp;&amp; code &lt;= 299)
+    return response_object.resource
+  else
+    switch (code) {
+      case 400:
+        throw new BadRequest(response_object)
+      case 401:
+        throw new Unauthorized(response_object)
+      case 403:
+        throw new PermissionDenied(response_object)
+      case 404:
+        throw new NotFound(response_object)
+      case 405:
+        throw new MethodNotAllowed(response_object)
+      case 500:
+        throw new InternalError(response_object)
+      case 503:
+        throw new UnavailableError(response_object)
+      default:
+        throw new FaunaHTTPError(response_object)
+    }
+}
 
-  queryStringForLogging = query =&gt;
-    query ? `?${Object.keys(query).map(key =&gt; `${key}=${query[key]}`).join(&apos;&amp;&apos;)}` : &apos;&apos;
+function queryStringForLogging(query) {
+  return query ? `?${Object.keys(query).map(key =&gt; `${key}=${query[key]}`).join(&apos;&amp;&apos;)}` : &apos;&apos;
+}
 </code></pre>
 
 </div>

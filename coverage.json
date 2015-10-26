@@ -1,7 +1,7 @@
 {
-  "coverage": "88%",
-  "expectCount": 150,
-  "actualCount": 132,
+  "coverage": "91.78%",
+  "expectCount": 146,
+  "actualCount": 134,
   "files": {
     "src/AsyncStream.js": {
       "expectCount": 10,
@@ -12,8 +12,8 @@
       "expectCount": 18,
       "actualCount": 11,
       "undocumentLines": [
-        3,
         22,
+        3,
         28,
         8,
         30,
@@ -28,7 +28,7 @@
         17
       ]
     },
-    "src/client.js": {
+    "src/Client.js": {
       "expectCount": 9,
       "actualCount": 9,
       "undocumentLines": []
@@ -40,13 +40,11 @@
     },
     "src/objects.js": {
       "expectCount": 22,
-      "actualCount": 17,
+      "actualCount": 19,
       "undocumentLines": [
-        107,
-        131,
-        78,
-        65,
-        127
+        108,
+        79,
+        133
       ]
     },
     "src/model/Field.js": {
@@ -62,14 +60,9 @@
       ]
     },
     "src/PageStream.js": {
-      "expectCount": 8,
+      "expectCount": 4,
       "actualCount": 4,
-      "undocumentLines": [
-        24,
-        34,
-        33,
-        25
-      ]
+      "undocumentLines": []
     },
     "src/query.js": {
       "expectCount": 32,

@@ -33,8 +33,8 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/AsyncStream.js~AsyncStream.html">AsyncStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PageStream.js~PageStream.html">PageStream</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~BadRequest.html">BadRequest</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaError.html">FaunaError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaHTTPError.html">FaunaHTTPError</a></span></span></li>
@@ -98,6 +98,8 @@
 
 <div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><p>Node.js client for <a href="https://faunadb.com">FaunaDB</a>.</p>
 <p>View documentation <a href="https://faunadb.github.io/faunadb-js/">here</a>.</p>
+<p>See an example <a href="https://github.com/faunadb/faunadb-js/blob/master/examples/faunadb-test.js">here</a>
+(<a href="https://github.com/faunadb/faunadb-js/blob/master/examples/faunadb-test-es7.js">EcmaScript 7 version</a>).</p>
 <p>See the <a href="https://faunadb.com/documentation">FaunaDB Documentation</a> for
 a complete API reference, or look in
 <a href="https://github.com/faunadb/faunadb-python/tree/master/tests"><code>/tests</code></a> for more
@@ -110,8 +112,6 @@ examples.</p>
 All Client methods return <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promises</a>.
 Although it&apos;s possible to use Client alone, it&apos;s often easier to do work through Model classes.
 For advanced work, the query api (<code>faunadb/lib/query</code>) will be useful.</p>
-<p>See an example <a href="https://github.com/faunadb/faunadb-js/blob/master/examples/faunadb-test.js">here</a>
-(<a href="https://github.com/faunadb/faunadb-js/blob/master/src/faunadb-test-es7.js">EcmaScript 7 version</a>).</p>
 <h2 id="building-it-yourself">Building it yourself</h2>
 <h3 id="setup">Setup</h3>
 <pre><code><code class="source-code prettyprint">npm install</code>
@@ -123,14 +123,14 @@ that looks like this:</p>
   &quot;domain&quot;: &quot;localhost&quot;,
   &quot;scheme&quot;: &quot;http&quot;,
   &quot;port&quot;: 8443,
-  &quot;rootKey&quot;: {&quot;user&quot;: &quot;secret&quot;}
+  &quot;auth&quot;: {&quot;user&quot;: &quot;secret&quot;}
 }</code>
 </code></pre><p><code>domain</code>, <code>scheme</code>, and <code>port</code> are optional and will default to FaunaDB cloud.
 So to test with cloud, <code>testConfig.json</code> is as simple as:</p>
-<p>  {
-    &quot;rootKey&quot;: {&quot;user&quot;: &quot;me@example.com&quot;: &quot;pass&quot;: &quot;swordfish&quot;}
-  }</p>
-<p>You can also set the <code>FAUNA_DOMAIN</code>, <code>FAUNA_SCHEME</code>, <code>FAUNA_PORT</code>, and <code>FAUNA_ROOT_KEY</code> environment variables. <code>FAUNA_ROOT_KEY</code> may look like <code>me@example.com:swordfish</code> for cloud accounts.</p>
+<pre><code><code class="source-code prettyprint">{
+  &quot;auth&quot;: {&quot;user&quot;: &quot;me@example.com&quot;: &quot;pass&quot;: &quot;swordfish&quot;}
+}</code>
+</code></pre><p>You can also set the <code>FAUNA_DOMAIN</code>, <code>FAUNA_SCHEME</code>, <code>FAUNA_PORT</code>, and <code>FAUNA_ROOT_KEY</code> environment variables. <code>FAUNA_ROOT_KEY</code> may look like <code>me@example.com:swordfish</code> for cloud accounts.</p>
 <p>Not that when testing in cloud, builtin tests for database, key, and custom field will fail as cloud accounts do not have access to that functionality.</p>
 <p>Testing uses a require hook, so building isn&apos;t necessary.</p>
 <p>For fuller testing, run <code>./test-all.sh</code>, which uses <a href="https://github.com/creationix/nvm">nvm</a>.</p>

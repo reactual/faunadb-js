@@ -33,8 +33,8 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/AsyncStream.js~AsyncStream.html">AsyncStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PageStream.js~PageStream.html">PageStream</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~BadRequest.html">BadRequest</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaError.html">FaunaError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaHTTPError.html">FaunaHTTPError</a></span></span></li>
@@ -161,6 +161,7 @@ export class Ref {
     return `Ref(${JSON.stringify(this.value)})`
   }
 
+  /** Whether these are both Refs and have the same value. */
   equals(other) {
     return other instanceof Ref &amp;&amp; this.value === other.value
   }
@@ -223,6 +224,7 @@ const allowed_event_actions = new Set([null, &apos;create&apos;, &apos;delete&ap
  * See `paginate` in the [docs](https://faunadb.com/documentation/queries#read_functions).
  */
 export class Page {
+  /** Use this on an object that you know represents a Page. */
   static fromRaw(object) {
     return new Page(object.data, object.before, object.after)
   }

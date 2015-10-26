@@ -33,8 +33,8 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/AsyncStream.js~AsyncStream.html">AsyncStream</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/Client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/PageStream.js~PageStream.html">PageStream</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/client.js~Client.html">Client</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~BadRequest.html">BadRequest</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaError.html">FaunaError</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/errors.js~FaunaHTTPError.html">FaunaHTTPError</a></span></span></li>
@@ -102,11 +102,16 @@ import * as query from &apos;./query&apos;
 import AsyncStream from &apos;./AsyncStream&apos;
 import {applyDefaults} from &apos;./_util&apos;
 
-/** Used to iterate over the pages of a query. */
+/**
+Used to iterate over the pages of a query.
+Yields whole pages (Arrays) at a time.
+See {@link PageStream.elements} to use stream over individual elements.
+*/
 export default class PageStream extends AsyncStream {
   /**
   Yields individual elements rather than whole pages at a time.
   Parameters are the same as the constructor.
+  @return {AsyncStream}
   */
   static elements(client, set, opts={}) {
     return new PageStream(client, set, opts).flatten()
@@ -120,8 +125,8 @@ export default class PageStream extends AsyncStream {
    */
   constructor(client, set, opts={}) {
     super()
-    this.client = client
-    this.set = set
+    this._client = client
+    this._set = set
 
     Object.assign(this, applyDefaults(opts, {
       // `undefined` automatically removed from queries by JSON.stringify.
@@ -129,27 +134,27 @@ export default class PageStream extends AsyncStream {
       mapLambda: null
     }))
 
-    this.direction = undefined
-    this.cursor = undefined
+    this._direction = undefined
+    this._cursor = undefined
   }
 
   /** @override */
   async next() {
-    if (this.cursor === &apos;done&apos;)
+    if (this._cursor === &apos;done&apos;)
       return {done: true}
 
-    let q = query.paginate(this.set, {size: this.pageSize, [this.direction]: this.cursor})
+    let q = query.paginate(this._set, {size: this.pageSize, [this._direction]: this._cursor})
     if (this.mapLambda !== null)
       q = query.map(this.mapLambda, q)
 
-    const page = Page.fromRaw(await this.client.query(q))
+    const page = Page.fromRaw(await this._client.query(q))
 
-    if (this.direction === undefined)
-      this.direction = page.after === undefined ? &apos;before&apos; : &apos;after&apos;
-    this.cursor = page[this.direction]
+    if (this._direction === undefined)
+      this._direction = page.after === undefined ? &apos;before&apos; : &apos;after&apos;
+    this._cursor = page[this._direction]
 
-    if (this.cursor === undefined)
-      this.cursor = &apos;done&apos;
+    if (this._cursor === undefined)
+      this._cursor = &apos;done&apos;
     return {done: false, value: page.data}
   }
 }

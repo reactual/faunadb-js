@@ -31,8 +31,8 @@ window.esdocSearchIndex = [
   ],
   [
     "faunadb/src/client.js~client",
-    "class/src/client.js~Client.html",
-    "<span>Client</span> <span class=\"search-result-import-path\">faunadb/src/client.js</span>",
+    "class/src/Client.js~Client.html",
+    "<span>Client</span> <span class=\"search-result-import-path\">faunadb/src/Client.js</span>",
     "class"
   ],
   [
@@ -1212,16 +1212,64 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/client.js",
+    "file/src/Client.js.html",
+    "src/Client.js",
+    "file"
+  ],
+  [
+    "src/client.js~client#constructor",
+    "class/src/Client.js~Client.html#instance-constructor-constructor",
+    "src/Client.js~Client#constructor",
+    "method"
+  ],
+  [
+    "src/client.js~client#delete",
+    "class/src/Client.js~Client.html#instance-method-delete",
+    "src/Client.js~Client#delete",
+    "method"
+  ],
+  [
+    "src/client.js~client#get",
+    "class/src/Client.js~Client.html#instance-method-get",
+    "src/Client.js~Client#get",
+    "method"
+  ],
+  [
+    "src/client.js~client#patch",
+    "class/src/Client.js~Client.html#instance-method-patch",
+    "src/Client.js~Client#patch",
+    "method"
+  ],
+  [
+    "src/client.js~client#ping",
+    "class/src/Client.js~Client.html#instance-method-ping",
+    "src/Client.js~Client#ping",
+    "method"
+  ],
+  [
+    "src/client.js~client#post",
+    "class/src/Client.js~Client.html#instance-method-post",
+    "src/Client.js~Client#post",
+    "method"
+  ],
+  [
+    "src/client.js~client#put",
+    "class/src/Client.js~Client.html#instance-method-put",
+    "src/Client.js~Client#put",
+    "method"
+  ],
+  [
+    "src/client.js~client#query",
+    "class/src/Client.js~Client.html#instance-method-query",
+    "src/Client.js~Client#query",
+    "method"
+  ],
+  [
     "src/pagestream.js",
     "file/src/PageStream.js.html",
     "src/PageStream.js",
     "file"
-  ],
-  [
-    "src/pagestream.js~pagestream#client",
-    "class/src/PageStream.js~PageStream.html#instance-member-client",
-    "src/PageStream.js~PageStream#client",
-    "member"
   ],
   [
     "src/pagestream.js~pagestream#constructor",
@@ -1230,87 +1278,15 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/pagestream.js~pagestream#cursor",
-    "class/src/PageStream.js~PageStream.html#instance-member-cursor",
-    "src/PageStream.js~PageStream#cursor",
-    "member"
-  ],
-  [
-    "src/pagestream.js~pagestream#direction",
-    "class/src/PageStream.js~PageStream.html#instance-member-direction",
-    "src/PageStream.js~PageStream#direction",
-    "member"
-  ],
-  [
     "src/pagestream.js~pagestream#next",
     "class/src/PageStream.js~PageStream.html#instance-method-next",
     "src/PageStream.js~PageStream#next",
     "method"
   ],
   [
-    "src/pagestream.js~pagestream#set",
-    "class/src/PageStream.js~PageStream.html#instance-member-set",
-    "src/PageStream.js~PageStream#set",
-    "member"
-  ],
-  [
     "src/pagestream.js~pagestream.elements",
     "class/src/PageStream.js~PageStream.html#static-method-elements",
     "src/PageStream.js~PageStream.elements",
-    "method"
-  ],
-  [
-    "src/client.js",
-    "file/src/client.js.html",
-    "src/client.js",
-    "file"
-  ],
-  [
-    "src/client.js~client#constructor",
-    "class/src/client.js~Client.html#instance-constructor-constructor",
-    "src/client.js~Client#constructor",
-    "method"
-  ],
-  [
-    "src/client.js~client#delete",
-    "class/src/client.js~Client.html#instance-method-delete",
-    "src/client.js~Client#delete",
-    "method"
-  ],
-  [
-    "src/client.js~client#get",
-    "class/src/client.js~Client.html#instance-method-get",
-    "src/client.js~Client#get",
-    "method"
-  ],
-  [
-    "src/client.js~client#patch",
-    "class/src/client.js~Client.html#instance-method-patch",
-    "src/client.js~Client#patch",
-    "method"
-  ],
-  [
-    "src/client.js~client#ping",
-    "class/src/client.js~Client.html#instance-method-ping",
-    "src/client.js~Client#ping",
-    "method"
-  ],
-  [
-    "src/client.js~client#post",
-    "class/src/client.js~Client.html#instance-method-post",
-    "src/client.js~Client#post",
-    "method"
-  ],
-  [
-    "src/client.js~client#put",
-    "class/src/client.js~Client.html#instance-method-put",
-    "src/client.js~Client#put",
-    "method"
-  ],
-  [
-    "src/client.js~client#query",
-    "class/src/client.js~Client.html#instance-method-query",
-    "src/client.js~Client#query",
     "method"
   ],
   [
