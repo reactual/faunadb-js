@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Index</title>
+	<title>Documentation Class: UnavailableError</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,47 +77,541 @@
 		<div id="main">
 			
 
+	<h1 class="page-title">Class: UnavailableError</h1>
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="module-errors.html">errors</a>~</span>
+        
+        UnavailableError
+        </h2>
+        
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+<hr>
+<dt>
+    <h4 class="name" id="UnavailableError"><span class="type-signature"></span>new UnavailableError(requestResult)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>A HTTP 503 error.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>requestResult</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="RequestResult.html">RequestResult</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
 	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
 	
 
 
 
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="module-errors-FaunaHTTPError.html">module:errors~FaunaHTTPError</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        <dl>
+            
+<hr>
+<dt class="name" id="message">
+    <h4><span class="type-signature"></span>message<span class="type-signature"> :string</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Message for this exception.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
 
 
 
+            </li>
+        </ul>
+    
 
+    
+<dl class="details">
+    
 
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="module-errors-FaunaError.html#message">module:errors~FaunaError#message</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
 
 
 
 	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="name">
+    <h4><span class="type-signature"></span>name<span class="type-signature"> :string</span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>Name of this exception.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="module-errors-FaunaError.html#name">module:errors~FaunaError#name</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
 	
 
 
 
+	
+
+	
+
+	
+
+	
+</dl>
 
 
-    <section class="readme-section">
-        <article><h1>FaunaDB JS Driver Reference Documentation</h1><p>See the README and the <a href="https://faunadb.com/documentation">Official FaunaDB Documentation</a> for examples and tutorials.</p>
-<h2>Required Classes and Modules</h2><ul>
-<li><a href="Client.html">Client</a>: Instances of this Class are used to communicate with FaunaDB.</li>
-<li><a href="module-query.html">query module</a>: Contains functions used to build FaunaDB Query expressions.</li>
-</ul>
-<h2>Other Classes and Modules</h2><ul>
-<li><a href="PageHelper.html">PageHelper</a>: A helper Class to provide a simpler API for consuming paged responses.</li>
-<li><a href="module-errors.html">errors module</a>: Contains exception classes thrown by <a href="Client.html">Client</a> instances
-and <a href="module-query.html">query</a> functions.</li>
-<li><a href="module-clientLogger.html">clientLogger module</a>: Contains functions used to easily create debug logging and observer callbacks.</li>
-<li><a href="RequestResult.html">RequestResult</a>: A container structure provided to observers registered in <a href="Client.html">Client</a> instances.</li>
-</ul>
-<h2>Internal types and modules</h2><ul>
-<li><a href="Expr.html">Expr</a>: A base class for FaunaDB expression types.</li>
-<li><a href="module-values.html">values module</a>: Class heirarchy for FaunaDB value types.</li>
-</ul></article>
-    </section>
+    
+</dd>
+
+        
+            
+<hr>
+<dt class="name" id="requestResult">
+    <h4><span class="type-signature"></span>requestResult<span class="type-signature"> :<a href="RequestResult.html">RequestResult</a></span></h4>
+
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        <p>A wrapped <a href="RequestResult.html">RequestResult</a> object, containing the request and response
+context of the failed request.</p>
+    </div>
+    
+
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type"><a href="RequestResult.html">RequestResult</a></span>
 
 
 
+            </li>
+        </ul>
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="module-errors-FaunaHTTPError.html#requestResult">module:errors~FaunaHTTPError#requestResult</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        <dl>
+            
+<hr>
+<dt>
+    <h4 class="name" id="errors"><span class="type-signature"></span>errors()</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Convenience method to return the errors from the response object.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="module-errors-FaunaHTTPError.html#errors">module:errors~FaunaHTTPError#errors</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        </dl>
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Index</title>
+	<title>Documentation Module: values</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,47 +77,110 @@
 		<div id="main">
 			
 
+	<h1 class="page-title">Module: values</h1>
+<section>
+
+<header>
+    
+</header>
+
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>FaunaDB value types. Generally, these classes do not need to be instantiated
+directly; they can be constructed through helper methods in <a href="module-query.html">module:query</a>.</p>
+<p>Instances of these classes will be returned in responses if the response object
+contains these values. For example, a FaunaDB response containing
+<code>{ &quot;@ref&quot;: &quot;classes/frogs/123&quot; }</code> will be returned as <code>new Ref(&quot;classes/frogs/123&quot;)</code>.</p>
+<p>See the <a href="https://faunadb.com/documentation/queries#values">FaunaDB Query API Documentation</a>
+for more information.</p></div>
+        
+
+        
+<dl class="details">
+    
+
 	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
 	
 
 
 
-
-
-
-
-
-
-
-
-	
 	
 
+	
+
+	
+
+	
+</dl>
 
 
+        
+    
+    </div>
 
+    
 
-    <section class="readme-section">
-        <article><h1>FaunaDB JS Driver Reference Documentation</h1><p>See the README and the <a href="https://faunadb.com/documentation">Official FaunaDB Documentation</a> for examples and tutorials.</p>
-<h2>Required Classes and Modules</h2><ul>
-<li><a href="Client.html">Client</a>: Instances of this Class are used to communicate with FaunaDB.</li>
-<li><a href="module-query.html">query module</a>: Contains functions used to build FaunaDB Query expressions.</li>
-</ul>
-<h2>Other Classes and Modules</h2><ul>
-<li><a href="PageHelper.html">PageHelper</a>: A helper Class to provide a simpler API for consuming paged responses.</li>
-<li><a href="module-errors.html">errors module</a>: Contains exception classes thrown by <a href="Client.html">Client</a> instances
-and <a href="module-query.html">query</a> functions.</li>
-<li><a href="module-clientLogger.html">clientLogger module</a>: Contains functions used to easily create debug logging and observer callbacks.</li>
-<li><a href="RequestResult.html">RequestResult</a>: A container structure provided to observers registered in <a href="Client.html">Client</a> instances.</li>
-</ul>
-<h2>Internal types and modules</h2><ul>
-<li><a href="Expr.html">Expr</a>: A base class for FaunaDB expression types.</li>
-<li><a href="module-values.html">values module</a>: Class heirarchy for FaunaDB value types.</li>
-</ul></article>
-    </section>
+    
 
+    
+        <h3 class="subsection-title">Classes</h3>
 
+        <dl>
+            <dt><a href="module-values-FaunaDate.html">FaunaDate</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-values-FaunaTime.html">FaunaTime</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-values-Ref.html">Ref</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-values-SetRef.html">SetRef</a></dt>
+            <dd></dd>
+        
+            <dt><a href="module-values-Value.html">Value</a></dt>
+            <dd></dd>
+        </dl>
+    
 
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
