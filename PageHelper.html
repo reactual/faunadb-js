@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Client.html">Client</a></li><li><a href="Expr.html">Expr</a></li><li><a href="module-errors-BadRequest.html">errors~BadRequest</a></li><li><a href="module-errors-FaunaError.html">errors~FaunaError</a></li><li><a href="module-errors-FaunaHTTPError.html">errors~FaunaHTTPError</a></li><li><a href="module-errors-InternalError.html">errors~InternalError</a></li><li><a href="module-errors-InvalidValue.html">errors~InvalidValue</a></li><li><a href="module-errors-MethodNotAllowed.html">errors~MethodNotAllowed</a></li><li><a href="module-errors-NotFound.html">errors~NotFound</a></li><li><a href="module-errors-PermissionDenied.html">errors~PermissionDenied</a></li><li><a href="module-errors-Unauthorized.html">errors~Unauthorized</a></li><li><a href="module-errors-UnavailableError.html">errors~UnavailableError</a></li><li><a href="module-values-FaunaDate.html">values~FaunaDate</a></li><li><a href="module-values-FaunaTime.html">values~FaunaTime</a></li><li><a href="module-values-Ref.html">values~Ref</a></li><li><a href="module-values-SetRef.html">values~SetRef</a></li><li><a href="module-values-Value.html">values~Value</a></li><li><a href="PageHelper.html">PageHelper</a></li><li><a href="RequestResult.html">RequestResult</a></li>
+					<li><a href="Client.html">Client</a></li><li><a href="Expr.html">Expr</a></li><li><a href="module-errors-BadRequest.html">errors~BadRequest</a></li><li><a href="module-errors-FaunaError.html">errors~FaunaError</a></li><li><a href="module-errors-FaunaHTTPError.html">errors~FaunaHTTPError</a></li><li><a href="module-errors-InternalError.html">errors~InternalError</a></li><li><a href="module-errors-InvalidArity.html">errors~InvalidArity</a></li><li><a href="module-errors-InvalidValue.html">errors~InvalidValue</a></li><li><a href="module-errors-MethodNotAllowed.html">errors~MethodNotAllowed</a></li><li><a href="module-errors-NotFound.html">errors~NotFound</a></li><li><a href="module-errors-PermissionDenied.html">errors~PermissionDenied</a></li><li><a href="module-errors-Unauthorized.html">errors~Unauthorized</a></li><li><a href="module-errors-UnavailableError.html">errors~UnavailableError</a></li><li><a href="module-values-FaunaDate.html">values~FaunaDate</a></li><li><a href="module-values-FaunaTime.html">values~FaunaTime</a></li><li><a href="module-values-Ref.html">values~Ref</a></li><li><a href="module-values-SetRef.html">values~SetRef</a></li><li><a href="module-values-Value.html">values~Value</a></li><li><a href="PageHelper.html">PageHelper</a></li><li><a href="RequestResult.html">RequestResult</a></li>
 				</ul>
 			</li>
 			
@@ -52,16 +52,18 @@
 			</li>
 			
 		</ul>
-		<div class="col-sm-3 col-md-3">
-            <form class="navbar-form" role="search">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        
 	</div>
 
 </div>
@@ -1428,28 +1430,30 @@ functions: Map or Filter.</p>
 </div>
 </div>
 
-<div class="modal fade" id="searchResults">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Search results</h4>
-      </div>
-      <div class="modal-body"></div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div>
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
 
 <footer>
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a>
 	
-		on 2016-08-09T11:14:27-07:00
+		on 2016-12-05T16:02:18-02:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
@@ -1457,7 +1461,9 @@ functions: Map or Filter.</p>
 
 <script src="scripts/docstrap.lib.js"></script>
 <script src="scripts/toc.js"></script>
-<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
 
 <script>
 $( function () {
@@ -1467,7 +1473,7 @@ $( function () {
 		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
 	} );
 
-	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
 		var $this = $( this );
 
 		var example = $this.find( "code" );
@@ -1503,8 +1509,7 @@ $( function () {
 	} );
 	$( "#toc" ).toc( {
 		anchorName  : function ( i, heading, prefix ) {
-			var id = $( heading ).attr( "id" );
-			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+			return $( heading ).attr( "id" ) || ( prefix + i );
 		},
 		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
 		showAndHide : false,
@@ -1530,11 +1535,13 @@ $( function () {
 <!--Google Analytics-->
 
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		SearcherDisplay.init();
-	});
-</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
 
 </body>
 </html>
