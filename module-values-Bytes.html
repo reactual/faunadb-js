@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Class: Value</title>
+	<title>Documentation Class: Bytes</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -79,7 +79,7 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Class: Value</h1>
+	<h1 class="page-title">Class: Bytes</h1>
 <section>
 
 <header>
@@ -87,7 +87,7 @@
         <h2>
             <span class="ancestors"><a href="module-values.html">values</a>~</span>
         
-        Value
+        Bytes
         </h2>
         
     
@@ -100,7 +100,7 @@
         
 <hr>
 <dt>
-    <h4 class="name" id="Value"><span class="type-signature">&lt;abstract> </span>new Value()</h4>
+    <h4 class="name" id="Bytes"><span class="type-signature"></span>new Bytes(value)</h4>
     
     
 </dt>
@@ -108,7 +108,7 @@
 
     
     <div class="description">
-        <p>Base type for FaunaDB value objects.</p>
+        <p>FaunaDB bytes. See the <a href="https://fauna.com/documentation/queries#values-special_types">docs</a>.</p>
     </div>
     
 
@@ -117,6 +117,63 @@
     
 
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Uint8Array</span>
+|
+
+<span class="param-type">ArrayBuffer</span>
+|
+
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>If ArrayBuffer it's converted to Uint8Array
+   If string it must be base64 encoded and it's converted to Uint8Array</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
     
 
     
@@ -184,7 +241,7 @@
 
 
     <ul>
-        <li><a href="Expr.html">Expr</a></li>
+        <li><a href="module-values-Value.html">module:values~Value</a></li>
     </ul>
 
 

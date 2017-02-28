@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="Client.html">Client</a></li><li><a href="Expr.html">Expr</a></li><li><a href="module-errors-BadRequest.html">errors~BadRequest</a></li><li><a href="module-errors-FaunaError.html">errors~FaunaError</a></li><li><a href="module-errors-FaunaHTTPError.html">errors~FaunaHTTPError</a></li><li><a href="module-errors-InternalError.html">errors~InternalError</a></li><li><a href="module-errors-InvalidArity.html">errors~InvalidArity</a></li><li><a href="module-errors-InvalidValue.html">errors~InvalidValue</a></li><li><a href="module-errors-MethodNotAllowed.html">errors~MethodNotAllowed</a></li><li><a href="module-errors-NotFound.html">errors~NotFound</a></li><li><a href="module-errors-PermissionDenied.html">errors~PermissionDenied</a></li><li><a href="module-errors-Unauthorized.html">errors~Unauthorized</a></li><li><a href="module-errors-UnavailableError.html">errors~UnavailableError</a></li><li><a href="module-values-FaunaDate.html">values~FaunaDate</a></li><li><a href="module-values-FaunaTime.html">values~FaunaTime</a></li><li><a href="module-values-Ref.html">values~Ref</a></li><li><a href="module-values-SetRef.html">values~SetRef</a></li><li><a href="module-values-Value.html">values~Value</a></li><li><a href="PageHelper.html">PageHelper</a></li><li><a href="RequestResult.html">RequestResult</a></li>
+					<li><a href="Client.html">Client</a></li><li><a href="Expr.html">Expr</a></li><li><a href="module-errors-BadRequest.html">errors~BadRequest</a></li><li><a href="module-errors-FaunaError.html">errors~FaunaError</a></li><li><a href="module-errors-FaunaHTTPError.html">errors~FaunaHTTPError</a></li><li><a href="module-errors-InternalError.html">errors~InternalError</a></li><li><a href="module-errors-InvalidArity.html">errors~InvalidArity</a></li><li><a href="module-errors-InvalidValue.html">errors~InvalidValue</a></li><li><a href="module-errors-MethodNotAllowed.html">errors~MethodNotAllowed</a></li><li><a href="module-errors-NotFound.html">errors~NotFound</a></li><li><a href="module-errors-PermissionDenied.html">errors~PermissionDenied</a></li><li><a href="module-errors-Unauthorized.html">errors~Unauthorized</a></li><li><a href="module-errors-UnavailableError.html">errors~UnavailableError</a></li><li><a href="module-values-Bytes.html">values~Bytes</a></li><li><a href="module-values-FaunaDate.html">values~FaunaDate</a></li><li><a href="module-values-FaunaTime.html">values~FaunaTime</a></li><li><a href="module-values-Ref.html">values~Ref</a></li><li><a href="module-values-SetRef.html">values~SetRef</a></li><li><a href="module-values-Value.html">values~Value</a></li><li><a href="PageHelper.html">PageHelper</a></li><li><a href="RequestResult.html">RequestResult</a></li>
 				</ul>
 			</li>
 			
@@ -547,6 +547,178 @@ for per-function documentation.</p></div>
         <tr>
             
                 <td class="name"><code>collection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-query.html#~ExprArg">module:query~ExprArg</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Expr.html">Expr</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~At"><span class="type-signature">&lt;inner> </span>At(timestamp, expr)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>See the <a href="https://fauna.com/documentation/queries#basic_forms">docs</a>.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>timestamp</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-query.html#~ExprArg">module:query~ExprArg</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>expr</code></td>
             
 
             <td class="type">
@@ -5796,7 +5968,7 @@ for per-function documentation.</p></div>
             
 <hr>
 <dt>
-    <h4 class="name" id="~Lambda"><span class="type-signature">&lt;inner> </span>Lambda(var_name, expr)</h4>
+    <h4 class="name" id="~KeyFromSecret"><span class="type-signature">&lt;inner> </span>KeyFromSecret(secret)</h4>
     
     
 </dt>
@@ -5804,9 +5976,7 @@ for per-function documentation.</p></div>
 
     
     <div class="description">
-        <p>See the <a href="https://fauna.com/documentation/queries#basic_forms">docs</a>.</p>
-<p>Directly produces a FaunaDB Lambda expression as described in the FaunaDB reference
-documentation.</p>
+        <p>See the <a href="https://fauna.com/documentation/queries#read_functions">docs</a>.</p>
     </div>
     
 
@@ -5841,7 +6011,7 @@ documentation.</p>
 
         <tr>
             
-                <td class="name"><code>var_name</code></td>
+                <td class="name"><code>secret</code></td>
             
 
             <td class="type">
@@ -5858,31 +6028,7 @@ documentation.</p>
 
             
 
-            <td class="description last"><p>The names of the variables to be bound in this lambda expression.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>expr</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="module-query.html#~ExprArg">module:query~ExprArg</a></span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The lambda expression.</p></td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -6036,6 +6182,180 @@ variables with the modules:query~Var function.</p>
             
 
             <td class="description last"><p>Takes the provided function and produces the appropriate FaunaDB query expression.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Expr.html">Expr</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="~Lambda"><span class="type-signature">&lt;inner> </span>Lambda(var_name, expr)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>See the <a href="https://fauna.com/documentation/queries#basic_forms">docs</a>.</p>
+<p>Directly produces a FaunaDB Lambda expression as described in the FaunaDB reference
+documentation.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>var_name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-query.html#~ExprArg">module:query~ExprArg</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The names of the variables to be bound in this lambda expression.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>expr</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-query.html#~ExprArg">module:query~ExprArg</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The lambda expression.</p></td>
         </tr>
 
     
@@ -8554,7 +8874,7 @@ rather than using this query function directly.</p>
             
 <hr>
 <dt>
-    <h4 class="name" id="~Ref"><span class="type-signature">&lt;inner> </span>Ref(ref)</h4>
+    <h4 class="name" id="~Ref"><span class="type-signature">&lt;inner> </span>Ref(ref, id)</h4>
     
     
 </dt>
@@ -8562,7 +8882,8 @@ rather than using this query function directly.</p>
 
     
     <div class="description">
-        <p>Constructs a Ref value.</p>
+        <p>If one parameter is provided, constructs a literal Ref value. If two are provided,
+constructs a Ref() function that, when evaluated, returns a Ref value.</p>
     </div>
     
 
@@ -8585,6 +8906,8 @@ rather than using this query function directly.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -8604,12 +8927,57 @@ rather than using this query function directly.</p>
             
                 
 <span class="param-type">string</span>
+|
+
+<span class="param-type"><a href="module-query.html#~ExprArg">module:query~ExprArg</a></span>
 
 
 
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="module-query.html#~ExprArg">module:query~ExprArg</a></span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+                    &lt;nullable><br>
+                
+
+                
+                </td>
             
 
             
@@ -10451,9 +10819,9 @@ rather than using this query function directly.</p>
 
 
 <span class="jsdoc-message">
-	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.1</a>
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a>
 	
-		on 2016-12-05T16:02:18-02:00
+		on 2017-02-28T10:26:05-03:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
